@@ -1,0 +1,93 @@
+<test-run id="2" testcasecount="1" result="Passed" start-time="2024-06-05 13:27:20.793741" end-time="2024-06-05 13:27:46.874279" duration="26" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0" clr-version="3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]" engine-version="3.6.2"><command-line>/home/linux/whitecap/lib/venv/bin/pytest tests/test_oracle.py</command-line><filter><test re="0">tests/test_oracle.py</test></filter><test-suite id="tests/test_oracle.py::TestOracleLoader" name="tests/test_oracle.py::TestOracleLoader" fullname="tests/test_oracle.py::TestOracleLoader" methodname="" classname="" runstate="Runnable" type="Assembly" testcasecount="1" result="Passed" label="" start-time="2024-06-05 13:27:44.096621" end-time="2024-06-05 13:27:46.873925" duration="2.777304" asserts="0" total="1" passed="0" failed="1" warnings="0" inconclusive="0" skipped="0"><properties><property name="python_version" value="3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]" /></properties><test-case id="100" name="tests/test_oracle.py::TestOracleLoader::test_load_data_query" fullname="tests/test_oracle.py::TestOracleLoader::test_load_data_query" methodname="test_load_data_query" classname="TestOracleLoader" runstate="Runnable" seed="1" result="Failed" label="" start-time="2024-06-05 13:27:44.096621" end-time="2024-06-05 13:27:46.873925" duration="2.777304" asserts="0"><properties><property name="python-version" value="3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]" /><property name="fspath" value="tests/test_oracle.py" /></properties><environment framework-version="3.6.2" clr-version="3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]" os-version="5.15.146.1-microsoft-standard-WSL2" platform="Linux" cwd="/home/linux/whitecap/ingestion-lib" machine-name="x86_64" user="" user-domain="" culture="en_US" uiculture="en_US" os-architecture="64bit" /><failure><message><![CDATA[self = &lt;tests.test_oracle.TestOracleLoader testMethod=test_load_data_query&gt;
+
+    def test_load_data_query(self):
+        jdbc_url = f"jdbc:oracle:thin:@//localhost:{self.oracle_container.get_exposed_port(1521)}/FREEPDB1"
+    
+        db_user = "system"
+        db_password = self.oracle_container.oracle_password
+        db_creds = DbCredentials(db_user, db_password, jdbc_url, {"database": DB_NAME})
+    
+        query = "SELECT * FROM DATA_TYPES_TABLE"
+        db_loader = OracleExtractor(data_contract="", spark=self.spark)
+&gt;       result_df = db_loader.load_data_query(db_creds, query)
+
+tests/test_oracle.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ingestion_lib/extractors/oracle.py:39: in load_data_query
+    .load()
+../lib/venv/lib/python3.10/site-packages/pyspark/sql/readwriter.py:307: in load
+    return self._df(self._jreader.load())
+../lib/venv/lib/python3.10/site-packages/py4j/java_gateway.py:1322: in __call__
+    return_value = get_return_value(
+../lib/venv/lib/python3.10/site-packages/pyspark/errors/exceptions/captured.py:169: in deco
+    return f(*a, **kw)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+answer = 'xro52', gateway_client = &lt;py4j.clientserver.JavaClient object at 0x7fb8cdc14580&gt;, target_id = 'o51', name = 'load'
+
+    def get_return_value(answer, gateway_client, target_id=None, name=None):
+        """Converts an answer received from the Java gateway into a Python object.
+    
+        For example, string representation of integers are converted to Python
+        integer, string representation of objects are converted to JavaObject
+        instances, etc.
+    
+        :param answer: the string returned by the Java gateway
+        :param gateway_client: the gateway client used to communicate with the Java
+            Gateway. Only necessary if the answer is a reference (e.g., object,
+            list, map)
+        :param target_id: the name of the object from which the answer comes from
+            (e.g., *object1* in `object1.hello()`). Optional.
+        :param name: the name of the member from which the answer comes from
+            (e.g., *hello* in `object1.hello()`). Optional.
+        """
+        if is_error(answer)[0]:
+            if len(answer) &gt; 1:
+                type = answer[1]
+                value = OUTPUT_CONVERTER[type](answer[2:], gateway_client)
+                if answer[1] == REFERENCE_TYPE:
+&gt;                   raise Py4JJavaError(
+                        "An error occurred while calling {0}{1}{2}.\n".
+                        format(target_id, ".", name), value)
+E                   py4j.protocol.Py4JJavaError: An error occurred while calling o51.load.
+E                   : java.sql.SQLException: No suitable driver
+E                   	at java.sql/java.sql.DriverManager.getDriver(DriverManager.java:298)
+E                   	at org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions.$anonfun$driverClass$2(JDBCOptions.scala:109)
+E                   	at scala.Option.getOrElse(Option.scala:189)
+E                   	at org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions.&lt;init&gt;(JDBCOptions.scala:109)
+E                   	at org.apache.spark.sql.execution.datasources.jdbc.JDBCOptions.&lt;init&gt;(JDBCOptions.scala:41)
+E                   	at org.apache.spark.sql.execution.datasources.jdbc.JdbcRelationProvider.createRelation(JdbcRelationProvider.scala:34)
+E                   	at org.apache.spark.sql.execution.datasources.DataSource.resolveRelation(DataSource.scala:346)
+E                   	at org.apache.spark.sql.DataFrameReader.loadV1Source(DataFrameReader.scala:229)
+E                   	at org.apache.spark.sql.DataFrameReader.$anonfun$load$2(DataFrameReader.scala:211)
+E                   	at scala.Option.getOrElse(Option.scala:189)
+E                   	at org.apache.spark.sql.DataFrameReader.load(DataFrameReader.scala:211)
+E                   	at org.apache.spark.sql.DataFrameReader.load(DataFrameReader.scala:172)
+E                   	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+E                   	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+E                   	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+E                   	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+E                   	at py4j.reflection.MethodInvoker.invoke(MethodInvoker.java:244)
+E                   	at py4j.reflection.ReflectionEngine.invoke(ReflectionEngine.java:374)
+E                   	at py4j.Gateway.invoke(Gateway.java:282)
+E                   	at py4j.commands.AbstractCommand.invokeMethod(AbstractCommand.java:132)
+E                   	at py4j.commands.CallCommand.execute(CallCommand.java:79)
+E                   	at py4j.ClientServerConnection.waitForCommands(ClientServerConnection.java:182)
+E                   	at py4j.ClientServerConnection.run(ClientServerConnection.java:106)
+E                   	at java.base/java.lang.Thread.run(Thread.java:829)
+
+../lib/venv/lib/python3.10/site-packages/py4j/protocol.py:326: Py4JJavaError]]></message><stack-trace><![CDATA[/home/linux/whitecap/lib/venv/lib/python3.10/site-packages/py4j/protocol.py:326: py4j.protocol.Py4JJavaError: An error occurred while calling o51.load.]]></stack-trace></failure><reason><message><![CDATA[&#x1b;[33mWARNING &#x1b;[0m root:config.py:59 DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:88 Pulling image testcontainers/ryuk:0.7.0
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:101 Container started: 9fe1fec3a47a
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.waiting_utils:waiting_utils.py:52 Waiting for container &lt;Container: 9fe1fec3a47a&gt; with image testcontainers/ryuk:0.7.0 to be ready ...
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:88 Pulling image gvenzl/oracle-free:slim
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:101 Container started: f822ff786fe9
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.waiting_utils:waiting_utils.py:52 Waiting for container &lt;Container: f822ff786fe9&gt; with image gvenzl/oracle-free:slim to be ready ...
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.waiting_utils:waiting_utils.py:52 Waiting for container &lt;Container: f822ff786fe9&gt; with image gvenzl/oracle-free:slim to be ready ...]]></message></reason><output><![CDATA[&#x1b;[33mWARNING &#x1b;[0m root:config.py:59 DOCKER_AUTH_CONFIG is experimental, see testcontainers/testcontainers-python#566
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:88 Pulling image testcontainers/ryuk:0.7.0
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:101 Container started: 9fe1fec3a47a
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.waiting_utils:waiting_utils.py:52 Waiting for container &lt;Container: 9fe1fec3a47a&gt; with image testcontainers/ryuk:0.7.0 to be ready ...
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:88 Pulling image gvenzl/oracle-free:slim
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.container:container.py:101 Container started: f822ff786fe9
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.waiting_utils:waiting_utils.py:52 Waiting for container &lt;Container: f822ff786fe9&gt; with image gvenzl/oracle-free:slim to be ready ...
+&#x1b;[32mINFO    &#x1b;[0m testcontainers.core.waiting_utils:waiting_utils.py:52 Waiting for container &lt;Container: f822ff786fe9&gt; with image gvenzl/oracle-free:slim to be ready ...]]></output></test-case><environment framework-version="3.6.2" clr-version="3.10.12 (main, Nov 20 2023, 15:14:05) [GCC 11.4.0]" os-version="5.15.146.1-microsoft-standard-WSL2" platform="Linux" cwd="/home/linux/whitecap/ingestion-lib" machine-name="x86_64" user="" user-domain="" culture="en_US" uiculture="en_US" os-architecture="64bit" /></test-suite></test-run>

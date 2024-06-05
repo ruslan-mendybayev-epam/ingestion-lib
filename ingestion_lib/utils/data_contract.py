@@ -6,7 +6,7 @@ class DataContract(BaseModel):
     db_name: str
     table_name: str
     schema: str
-    watermark_columns: [str]
+    watermark_columns: list[str]
     lower_bound: Optional[str] = None
     upper_bound: Optional[str] = None
     full_load: bool = False

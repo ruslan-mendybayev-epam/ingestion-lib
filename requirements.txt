@@ -4,3 +4,5 @@ delta-spark
 testcontainers==4.5.1
 pytest-mock
 delta-spark
+findspark
+psutil
