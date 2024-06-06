@@ -3,6 +3,7 @@ import os
 base_dir = os.path.dirname(os.path.abspath(__file__))
 DRIVER_JAR_PATH = f"{base_dir}/jars/ojdbc10.jar"
 DB_NAME = "TEST_DB"
+DOCKER_IMAGE = "gvenzl/oracle-xe:18-slim"
 DDL_FOLDER = f"{base_dir}/db_scripts/ddl/"
 DML_FOLDER = f"{base_dir}/db_scripts/dml/"
 DB_SCRIPT = f"{base_dir}/db_scripts/db/db.sql"

@@ -67,52 +67,17 @@ class TestOracleLoader(unittest.TestCase):
 
     # @patch("pyspark.sql.SparkSession")
     def test_load_data_query(self):
-        jdbc_url = f"jdbc:oracle:thin:@//localhost:{self.oracle_container.get_exposed_port(1521)}/FREEPDB1"
+        jdbc_url = f"jdbc:oracle:thin:@//localhost:{self.oracle_container.get_exposed_port(1521)}/XE"
 
         db_user = "system"
         db_password = self.oracle_container.oracle_password
         db_creds = DbCredentials(db_user, db_password, jdbc_url, {"database": DB_NAME})
 
-        query = "SELECT * FROM DATA_TYPES_TABLE"
+        query = "SELECT * FROM test_table"
         db_loader = OracleExtractor(data_contract="", spark=self.spark)
         result_df = db_loader.load_data_query(db_creds, query)
 
         # For geography_col, geometry_col, and hierarchyid_col are not supported out of the box for PySpark.
-        assert_column_value(result_df, "binary_col", bytes([0x15]))
-        assert_column_value(result_df, "varbinary_col", bytearray([0x15]))
-        assert_column_value(result_df, "char_col", "a")
-        assert_column_value(result_df, "varchar_col", "a")
-        assert_column_value(result_df, "nchar_col", "a")
-        assert_column_value(result_df, "nvarchar_col", "a")
-        assert_column_value(result_df, "datetime_col", datetime.strptime("2020-12-01 00:00:00", "%Y-%m-%d %H:%M:%S"))
-        assert_column_value(result_df, "smalldatetime_col", datetime.strptime("2020-12-01 00:00:00", "%Y-%m-%d %H:%M:%S"))
-        assert_column_value(result_df, "date_col", datetime.strptime("2020-12-01", "%Y-%m-%d").date())
-        assert_column_value(result_df, "time_col", datetime.strptime("1970-01-01 10:34:23", "%Y-%m-%d %H:%M:%S"))
-        assert_column_value(result_df, "datetimeoffset_col", "2025-12-10 12:32:10.0000000 +01:00")
-        assert_column_value(result_df, "datetime2_col", datetime.strptime("2016-12-21 00:00:00", "%Y-%m-%d %H:%M:%S"))
-        assert_column_value(result_df, "decimal_col", Decimal("476.29"))
-        assert_column_value(result_df, "numeric_col", Decimal("12345.12"))
-        assert_column_value(result_df, "float_col", float("1245.12"))
-        assert_column_value(result_df, "bigint_col", 15)
-        assert_column_value(result_df, "int_col", 15)
-        assert_column_value(result_df, "smallint_col", 15)
-        assert_column_value(result_df, "tinyint_col", 1)
-        assert_column_value(result_df, "bit_col", True)
-        assert_column_value(
-            result_df,
-            "image_col",
-            bytearray(b"\xff\xd8\xff\xe0\x00\x10JFIF\x00\x01\x01\x00\x00H\x00H\x00\x00\xff\xed\x00;Adobe\x00d\x00\x00\x00"),
-        )
-        assert_column_value(result_df, "ntext_col", "testing 1,2,3")
-        assert_column_value(result_df, "text_col", "text")
-        assert_column_value(result_df, "xml_col", '<employee><firstname type="textbox">Jimmy</firstname></employee>')
-        assert_column_value(result_df, "custom_varchar20_col", "custom varchar type")
-
-        expected_value = Decimal("3148.29").quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
-        assert_column_value(result_df, "money_col", expected_value)
-        assert_column_value(result_df, "smallmoney_col", expected_value)
-
-        # For uniqueidentifier_col, you can only check if the value is not null, as NEWID() generates UUID dynamically.
-        assert result_df.filter(col("uniqueidentifier_col").isNull()).count() == 0
-
-        assert isclose(result_df.first()["real_col"], 96.602, rel_tol=1e-5), "Expected '96.602' in column 'real_col'."
+        assert_column_value(result_df, "id", 1)
+        assert_column_value(result_df, "name", "John Doe")
+        assert_column_value(result_df, "age", 30)

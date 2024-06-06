@@ -6,3 +6,4 @@ pytest-mock
 delta-spark
 findspark
 psutil
+azure-monitor-ingestion

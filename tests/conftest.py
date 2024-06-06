@@ -9,8 +9,8 @@ import findspark
 from pyspark.sql import SparkSession
 
 from testcontainers.oracle import OracleDbContainer
-from tests.db_test_settings import DRIVER_JAR_PATH, DB_SCRIPT, DDL_FOLDER, DML_FOLDER
-from tests.db_testing_utils import create_database, get_mock_db_utils
+from tests.db_test_settings import DRIVER_JAR_PATH, DB_SCRIPT, DDL_FOLDER, DML_FOLDER, DOCKER_IMAGE
+from tests.db_testing_utils import create_database
 
 findspark.init()
 
@@ -71,8 +71,7 @@ def spark_session(request) -> SparkSession:  # type: ignore
 def oracle_container() -> OracleDbContainer:
     """Create a SqlServerContainer instance."""
 
-    with OracleDbContainer() as oracle:
-        url = oracle.get_connection_url()
-        create_database(oracle, DB_SCRIPT, DDL_FOLDER, DML_FOLDER, url)
+    with OracleDbContainer(image=DOCKER_IMAGE) as oracle:
+        create_database(oracle, DB_SCRIPT, DDL_FOLDER, DML_FOLDER)
         yield oracle
 

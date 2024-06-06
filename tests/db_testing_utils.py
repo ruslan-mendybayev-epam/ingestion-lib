@@ -41,7 +41,7 @@ def get_mock_logs_ingestion_client(mock_logs_ingestion_client_class):
     return mock_logs_ingestion_client
 
 
-def create_database(oracle, db_path, ddl_path, dml_path, url):
+def create_database(oracle, db_path, ddl_path, dml_path):
     """
     Creates a database, tables, and inserts data into the tables.
 
@@ -55,10 +55,11 @@ def create_database(oracle, db_path, ddl_path, dml_path, url):
     Returns:
         None
     """
-
+    url = f"system/{oracle.oracle_password}@//localhost:{oracle.get_exposed_port(1521)}/XE"
     # create db
     with open(f"{db_path}", "r") as file:
-        oracle.exec(["sh", "-c", f'echo "{file.read()}" | sqlplus {url}'])
+        db_file = file.read()
+        oracle.exec(["sh", "-c", f'echo "{db_file}" | sqlplus {url}'])
 
     # create tables
     for script_file in glob.glob(os.path.join(ddl_path, "**/*.sql"), recursive=True):
