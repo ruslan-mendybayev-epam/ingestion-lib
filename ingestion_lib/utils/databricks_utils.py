@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 from delta.tables import DeltaTable
 
-from ingestion_lib.utils.data_contract import DataContract
+from ingestion_lib.utils.table_contract import TableContract
 
 
 def get_row_count_written(df: DataFrame, location: str = None, table_name: str = None) -> int:
@@ -48,25 +48,25 @@ def get_row_count_written(df: DataFrame, location: str = None, table_name: str =
     return -1
 
 
-def get_delta_write_options(data_contract: DataContract) -> dict:
+def get_delta_write_options(table_contract: TableContract) -> dict:
     """
     Returns dictionary with replaceWhere condition if watermark column exists and full load is set to false.
     Returns empty dictionary if there is no watermark column mentioned or full load is set to true.
     """
-    if not data_contract.watermark_columns or data_contract.full_load == "true" or data_contract.load_type == "one_time":
+    if not table_contract.watermark_columns or table_contract.full_load == "true" or table_contract.load_type == "one_time":
         return {"mergeSchema": True}
-    elif len(data_contract.watermark_columns) == 1:
+    elif len(table_contract.watermark_columns) == 1:
         return {
             "replaceWhere":
-                f"{data_contract.watermark_columns[0]} >= '{data_contract.lower_bound}' "
-                f"AND {data_contract.watermark_columns[0]} <= '{data_contract.upper_bound}'",
+                f"{table_contract.watermark_columns[0]} >= '{table_contract.lower_bound}' "
+                f"AND {table_contract.watermark_columns[0]} <= '{table_contract.upper_bound}'",
             "mergeSchema": True,
         }
     else:
-        watermark_columnss = ", ".join(data_contract.watermark_columns)
+        watermark_columnss = ", ".join(table_contract.watermark_columns)
         return {
             "replaceWhere":
-                f"greatest({watermark_columnss}) >= '{data_contract.lower_bound}' "
-                f"AND greatest({watermark_columnss}) <= '{data_contract.upper_bound}'",
+                f"greatest({watermark_columnss}) >= '{table_contract.lower_bound}' "
+                f"AND greatest({watermark_columnss}) <= '{table_contract.upper_bound}'",
             "mergeSchema": True,
         }

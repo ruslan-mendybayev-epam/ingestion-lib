@@ -2,10 +2,11 @@ from pydantic import BaseModel, Field
 from typing import Optional
 
 
-class DataContract(BaseModel):
+class TableContract(BaseModel):
     db_name: str
     table_name: str
     schema: str
+    batch_timestamp: str
     watermark_columns: [str]
     lower_bound: Optional[str] = None
     upper_bound: Optional[str] = None

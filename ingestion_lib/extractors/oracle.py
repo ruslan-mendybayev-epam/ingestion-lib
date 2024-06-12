@@ -20,8 +20,8 @@ class OracleExtractor(Extractor):
             .option("url", self.creds.jdbc_url)
             .option("user", self.creds.user)
             .option("password", self.creds.password)
-            .option("database", self.creds.db_options["database"])
-            .option("query", query)
+            .option("driver", "oracle.jdbc.driver.OracleDriver")
+            .option("dbtable", query)
             .load()
         )
 

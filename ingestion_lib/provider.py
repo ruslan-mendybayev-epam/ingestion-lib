@@ -1,8 +1,9 @@
+from pyspark.sql.functions import lit
 from ingestion_lib.extractors.base import Extractor
 from pyspark.sql import DataFrame, SparkSession
 
 from ingestion_lib.extractors.oracle import OracleExtractor
-from ingestion_lib.utils.data_contract import DataContract
+from ingestion_lib.utils.data_contract import TableContract
 from ingestion_lib.utils.databricks_utils import get_row_count_written, get_delta_write_options
 
 
@@ -11,9 +12,9 @@ class DatabricksIngestionProvider:
         self.extractor = extractor
 
     @staticmethod
-    def init_oracle_with_data_contract(data_contract: DataContract, spark: SparkSession):
+    def init_oracle_with_table_contract(table_contract: TableContract, spark: SparkSession):
         # TODO: create better logic to handle Extractor Creation
-        return DatabricksIngestionProvider(OracleExtractor(data_contract, spark))
+        return DatabricksIngestionProvider(OracleExtractor(table_contract, spark))
 
     def normalize_data(self, data) -> DataFrame:
         for column in data.columns:
@@ -28,18 +29,7 @@ class DatabricksIngestionProvider:
 
     def execute_ingestion(self):
         """
-        **Step 4: Check if table exists (one-time load only)**
-        Description: Check if the table exists in the "bronze" layer.
-        Details: If the `load_type` is "one_time" and the table exists, the method returns 0, skipping the ingestion process.
-
-        **Step 7: Add timestamp column**
-        Description: Add a "load_timestamp" column to the DataFrame.
-        Details: The `add_timestamp_column()` method is called to add the timestamp column.
-
-        **Step 8: Create table if not exists**
-        Description: Create the table in the "bronze" layer if it does not exist.
-        Details: The `create_table_if_not_exist()` function is called to create the table.
-
+        Missing steps:
         **Step 9: Run data quality checks (optional)**
         Description: Run data quality checks on the DataFrame if a contract is provided.
         Details: If a contract is provided and it contains "dq_rules", the `DataQualityChecker` class is used to run data quality checks.
@@ -49,8 +39,22 @@ class DatabricksIngestionProvider:
         Details: The row count is logged, and the method returns the row count.
         :return:
         """
-        data_contract = self.extractor.data_contract
+        table_contract = self.extractor.table_contract
         data = self.extractor.extract_data()
-        normalized_data = self.normalize_data(data)
-        result = self.write_data(normalized_data, data_contract.target_schema, data_contract.mount_point,
-                                 data_contract.table_name, options=get_delta_write_options(data_contract))
+        normalized_data = self.__add_timestamp_column(table_contract.batch_timestamp, self.normalize_data(data))
+
+        result = self.write_data(normalized_data, table_contract.target_schema, table_contract.mount_point,
+                                 table_contract.table_name, options=get_delta_write_options(table_contract))
+
+    def __add_timestamp_column(self, batch_timestamp: str, df: DataFrame) -> DataFrame:
+        """
+        Adds timestamp column to the input DataFrame.
+
+        Parameters:
+        - load_timestamp: The timestamp to be added to the DataFrame.
+        - df: The Spark DataFrame to which the timestamp column will be added.
+
+        Returns:
+        - The Spark DataFrame with a new column named 'load_timestamp' that contains the provided timestamp.
+        """
+        return df.withColumn("load_timestamp", lit(batch_timestamp).cast("timestamp"))
