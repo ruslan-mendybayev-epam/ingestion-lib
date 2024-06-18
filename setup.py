@@ -19,8 +19,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
     ],
-    python_requires='>=3.11',
+    python_requires='>=3.10',
     install_requires=[
-        'pydantic>=2.7.2',
+        'pydantic>=1.10.6',
     ],
 )

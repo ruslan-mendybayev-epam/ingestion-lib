@@ -21,11 +21,11 @@ class DatabricksIngestionProvider:
             data = data.withColumnRenamed(column, column.replace(" ", "_"))
         return data
 
-    def write_data(self, data, target_schema, mount_point, table_name, options):
+    def write_data(self, data, target_schema, table_name, options):
         # Logic to write data to Databricks Delta Lake
-        location = f"{mount_point}/{target_schema}/{table_name}"
-        (data.distinct().write.format("delta").mode("overwrite").options(**options).save(location))
-        return get_row_count_written(data, location=location)
+        # location = f"{mount_point}/{target_schema}/{table_name}"
+        (data.distinct().write.format("delta").mode("overwrite").options(**options).saveAsTable(f"{target_schema}.{table_name}"))
+        return get_row_count_written(data, table_name=f"{target_schema}.{table_name}")
 
     def execute_ingestion(self):
         """
@@ -43,8 +43,9 @@ class DatabricksIngestionProvider:
         data = self.extractor.extract_data()
         normalized_data = self.__add_timestamp_column(table_contract.batch_timestamp, self.normalize_data(data))
 
-        result = self.write_data(normalized_data, table_contract.target_schema, table_contract.mount_point,
+        row_count = self.write_data(normalized_data, table_contract.target_schema,
                                  table_contract.table_name, options=get_delta_write_options(table_contract))
+        print(f"Table {table_contract.table_name} is successfully ingested with the row count {row_count}")
 
     def __add_timestamp_column(self, batch_timestamp: str, df: DataFrame) -> DataFrame:
         """

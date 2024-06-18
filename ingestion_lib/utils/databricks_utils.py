@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 from delta.tables import DeltaTable
 
-from ingestion_lib.utils.table_contract import TableContract
+from ingestion_lib.utils.data_contract import TableContract
 
 
 def get_row_count_written(df: DataFrame, location: str = None, table_name: str = None) -> int:
@@ -31,7 +31,7 @@ def get_row_count_written(df: DataFrame, location: str = None, table_name: str =
     for history_record in history:  # History is in descending order by default
         if (
                 "operation" in history_record
-                and (history_record["operation"] == "WRITE" or history_record["operation"] == "CREATE TABLE AS SELECT")
+                and history_record["operation"] in ("WRITE", "CREATE TABLE AS SELECT", "CREATE OR REPLACE TABLE AS SELECT")
                 and "operationMetrics" in history_record
                 and "numOutputRows" in history_record["operationMetrics"]
         ):
@@ -53,7 +53,7 @@ def get_delta_write_options(table_contract: TableContract) -> dict:
     Returns dictionary with replaceWhere condition if watermark column exists and full load is set to false.
     Returns empty dictionary if there is no watermark column mentioned or full load is set to true.
     """
-    if not table_contract.watermark_columns or table_contract.full_load == "true" or table_contract.load_type == "one_time":
+    if not table_contract.watermark_columns or table_contract.full_load == True or table_contract.load_type == "one_time":
         return {"mergeSchema": True}
     elif len(table_contract.watermark_columns) == 1:
         return {
@@ -70,3 +70,25 @@ def get_delta_write_options(table_contract: TableContract) -> dict:
                 f"AND greatest({watermark_columnss}) <= '{table_contract.upper_bound}'",
             "mergeSchema": True,
         }
+
+def get_dbutils(spark):
+    """
+    This is workaround to handle ModuleNotFound in databricks Exception while using dbutils from the library.
+
+    Parameters:
+    - spark: Spark Session
+
+    Returns:
+    - Databricks dbutils
+    """
+    try:
+        from pyspark.dbutils import DBUtils
+
+        dbutils = DBUtils(spark)
+    except: 
+        import IPython
+
+        ipython = IPython.get_ipython()
+        dbutils = ipython.user_ns["dbutils"] if ipython else None
+
+    return dbutils
