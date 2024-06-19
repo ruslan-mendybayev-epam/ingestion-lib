@@ -33,4 +33,10 @@ class Extractor(ABC):
 
     @abstractmethod
     def extract_data(self) -> DataFrame:
+        """
+        Abstract method to extract data from a data source.
+
+        Subclasses should implement this method to define the specific logic for connecting to their data source 
+        and returning the results as a Spark DataFrame.
+        """
         pass

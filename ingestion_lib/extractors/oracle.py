@@ -5,6 +5,18 @@ from ingestion_lib.utils.data_contract import TableContract
 
 
 class OracleExtractor(Extractor):
+    """
+    A data extractor for Oracle databases.
+
+    This class is designed to facilitate the extraction of data from Oracle databases using Spark. It initializes
+    an instance with the necessary details to connect to the database and perform data extraction tasks.
+    
+    Parameters:
+    - table_contract (TableContract): The contract for the table from which data will be extracted.
+    - spark (SparkSession): The Spark session to be used for data extraction operations.
+    - creds (DbCredentials): The database credentials required for connecting to the Oracle database.
+    """
+
     def __init__(self, table_contract: TableContract, spark: SparkSession, creds: DbCredentials):
         self.table_contract = table_contract
         self.spark = spark
@@ -12,9 +24,14 @@ class OracleExtractor(Extractor):
 
     def load_data_query(self, query: str):
         """
-        unchecked
-        :param query:
-        :return:
+        This method establishes a connection to a database using JDBC URL, credentials, Oracle JDBC driver and a specified SQL query.
+        It reads the data into a Spark DataFrame.
+
+        Parameters:
+        - query (str): The SQL query string used to select data from the database.
+
+        Returns:
+        - DataFrame: A Spark DataFrame containing the data retrieved from the database based on the input query.
         """
         return (
             self.spark.read.format("jdbc")
@@ -28,8 +45,12 @@ class OracleExtractor(Extractor):
 
     def extract_data(self) -> DataFrame:
             """
-            :return:
+            Extracts data from an Oracle database based on the table contract and conditions.
+
+            Returns:
+            - DataFrame: A Spark DataFrame containing the data retrieved from the database based on the input query.
             """
+            
             # TODO: Add invalid type checks
             select_query = self.__build_select_query()
             condition = self.__build_condition()
