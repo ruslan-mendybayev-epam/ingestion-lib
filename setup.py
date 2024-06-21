@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='ingestion-lib',
-    version='0.0.2',
+    version='0.0.3',
     author='Ruslan Mendybayev',
     author_email='ruslan_mendybayev@epam.com',
     description='Library for data ingestion',
