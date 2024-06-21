@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 from delta.tables import DeltaTable
 
-from ingestion_lib.utils.table_contract import TableContract
+from ingestion_lib.utils.data_contract import TableContract
 
 
 def get_row_count_written(df: DataFrame, location: str = None, table_name: str = None) -> int:
