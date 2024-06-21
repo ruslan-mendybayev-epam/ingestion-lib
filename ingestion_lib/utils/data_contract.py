@@ -1,13 +1,13 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 
 class TableContract(BaseModel):
     db_name: str
     table_name: str
-    schema: str
+    schema_: str
     batch_timestamp: str
-    watermark_columns: [str]
+    watermark_columns: List[str]
     lower_bound: Optional[str] = None
     upper_bound: Optional[str] = None
     full_load: bool = False
@@ -16,4 +16,8 @@ class TableContract(BaseModel):
     mount_point: str
 
     class Config:
-        anystr_lower = True  # Example of Pydantic config: convert all strings to lower case
+        anystr_lower = True
+        allow_population_by_field_name = True
+        fields = {
+            'schema_': {'alias': 'schema'}
+        }
