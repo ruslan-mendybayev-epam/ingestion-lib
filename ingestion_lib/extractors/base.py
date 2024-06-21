@@ -77,3 +77,12 @@ class Extractor(ABC):
                         AS _watermark_column_
                     
                     """
+
+
+class JdbcExtractor(Extractor):
+
+    def creds(self):
+        pass
+
+    def load_data_query(self, query: str):
+        pass
