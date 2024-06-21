@@ -3,7 +3,7 @@ name: Upload Development Version
 on:
   push:
     branches:
-      - dev/*
+      - dev
 
 jobs:
   upload-dev-version:
