@@ -12,6 +12,7 @@ jobs:
       url: https://test.pypi.org/p/ingestion-lib
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -31,8 +32,10 @@ jobs:
         run: |
           poetry install --with dev --sync
 
-      - name: Determine version with semantic-release
-        run: semantic-release prerelease
+      - name: Python Semantic Release
+        uses: python-semantic-release/python-semantic-release@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build library
         run: |
