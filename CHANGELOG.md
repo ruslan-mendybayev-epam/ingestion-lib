@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.2 (2024-06-22)
+
+### Fix
+
+* fix: sem-ver ([`455754b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/455754b44eeecb8bb3122cf72fb2f6825987130b))
+
 ## v0.1.0-dev.1 (2024-06-22)
 
 ### Chore
