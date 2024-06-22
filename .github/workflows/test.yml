@@ -10,7 +10,6 @@ jobs:
     environment:
       name: testpypi
       url: https://test.pypi.org/p/ingestion-lib
-
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     runs-on: ubuntu-latest
