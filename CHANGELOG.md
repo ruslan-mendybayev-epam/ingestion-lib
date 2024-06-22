@@ -2,7 +2,24 @@
 
 
 
-## v0.1.0-dev.1 (2024-06-22)
+## v0.1.0-dev.2 (2024-06-22)
+
+### Feature
+
+* feat: added semantic versining ([`499886f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/499886fc7cd32ff101ecd3aa402739957e82254b))
+
+### Fix
+
+* fix: changed build command for ci ([`68ad78f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/68ad78f990181baf4c4754ee914e3f5b802fdbc1))
+
+### Unknown
+
+* removed check for dev branch ([`8b00a14`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/8b00a1422452e6ccc24c53239d70c90fee2f6bef))
+
+* changed dependencies build ([`e6532f1`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/e6532f14002d7873e36b3012dec197405a9e7c6f))
+
+
+## v0.1.0-dev.1 (2024-06-23)
 
 ### Chore
 
