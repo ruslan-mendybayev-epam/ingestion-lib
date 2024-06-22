@@ -27,24 +27,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
 
-      - name: Check commit message
-        id: commit-check
-        run: |
-          commit_message=$(git log -1 --pretty=%B)
-          echo "Commit message: $commit_message"
-          if [[ "$commit_message" =~ ^(feat|fix): ]]; then
-            echo "::set-output name=should_upload::true"
-          else
-            echo "::set-output name=should_upload::false"
-          fi
-
       - name: Build library
-        if: steps.commit-check.outputs.should_upload == 'true'
         run: |
           poetry build
 
       - name: Publish package distributions to TestPyPI
-        if: steps.commit-check.outputs.should_upload == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
