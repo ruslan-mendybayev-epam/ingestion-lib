@@ -41,7 +41,7 @@ jobs:
       - name: Build library
         if: steps.commit-check.outputs.should_upload == 'true'
         run: |
-          python setup.py sdist bdist_wheel
+          poetry build
 
       - name: Publish package distributions to TestPyPI
         if: steps.commit-check.outputs.should_upload == 'true'
