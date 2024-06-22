@@ -14,7 +14,7 @@ pydantic = "1.10.6"
 python-semantic-release = "<9.8.3"
 
 [tool.semantic_release]
-version_variable = "pyproject.toml:version"
+version_toml = ["pyproject.toml:tool.poetry.version"]
 
 [tool.semantic_release.branches.dev]
 match = "dev"
