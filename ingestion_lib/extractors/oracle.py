@@ -19,9 +19,9 @@ class OracleExtractor(Extractor):
         """
         return (
             self.spark.read.format("jdbc")
-            .option("url", self.creds.jdbc_url)
-            .option("user", self.creds.user)
-            .option("password", self.creds.password)
+            .option("url", self.creds().jdbc_url)
+            .option("user", self.creds().user)
+            .option("password", self.creds().password)
             .option("driver", "oracle.jdbc.driver.OracleDriver")
             .option("dbtable", query)
             .load()
