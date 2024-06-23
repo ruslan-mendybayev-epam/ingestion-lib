@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.5 (2024-06-23)
+
+### Feature
+
+* feat: added db credentials class to base ([`b04c301`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b04c30141741bf63e3f155e288251887159ee022))
+
 ## v0.1.0-dev.4 (2024-06-23)
 
 ### Feature

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ingestion-lib"
-version = "0.1.0-dev.4"
+version = "0.1.0-dev.5"
 description = "Library for data ingestion"
 authors = ["Ruslan_Mendybayev <ruslan_mendybayev@epam.com>"]
 license = "MIT License"
