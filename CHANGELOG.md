@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.4 (2024-06-23)
+
+### Feature
+
+* feat: added credentials to TableContract for Oracle extractor ([`4fe5a8d`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/4fe5a8d2e67de95beb1f16a1cff7199fc7c5e8be))
+
 ## v0.1.0-dev.3 (2024-06-23)
 
 ### Fix
