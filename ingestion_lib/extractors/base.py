@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
 
-from pydantic import BaseModel
+from pyspark.sql.session import SparkSession, DataFrame
 
 from ingestion_lib.utils.data_contract import TableContract
-from pyspark.sql.session import SparkSession, DataFrame
 
 
 class Extractor(ABC):
@@ -65,7 +64,8 @@ class Extractor(ABC):
         """
         table = self.table_contract.table_name
         schema = self.table_contract.schema
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(self.table_contract.watermark_columns) == 1:
+        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(
+                self.table_contract.watermark_columns) == 1:
             return f"SELECT * FROM [{schema}].[{table}]"
         else:
             watermark_columns = ", ".join([f"({col})" for col in self.table_contract.watermark_columns])
@@ -88,12 +88,3 @@ class JdbcExtractor(Extractor):
 
     def load_data_query(self, query: str):
         pass
-
-
-class DbCredentials(BaseModel):
-    """
-    Class containing credentials like user, password and jdbc_url for connecting to oracle_EBS
-    """
-    user: str
-    password: str
-    jdbc_url: str

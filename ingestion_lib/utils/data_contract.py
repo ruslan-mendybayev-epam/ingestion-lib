@@ -1,7 +1,15 @@
 from typing import Optional, List
 
 from pydantic import BaseModel
-from ingestion_lib.extractors.base import DbCredentials
+
+
+class DbCredentials(BaseModel):
+    """
+    Class containing credentials like user, password and jdbc_url for connecting to oracle_EBS
+    """
+    user: str
+    password: str
+    jdbc_url: str
 
 
 class TableContract(BaseModel):
@@ -19,3 +27,4 @@ class TableContract(BaseModel):
     class Config:
         anystr_lower = True
         allow_population_by_field_name = True
+

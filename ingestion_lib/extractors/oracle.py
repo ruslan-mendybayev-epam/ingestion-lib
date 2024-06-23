@@ -1,4 +1,5 @@
-from ingestion_lib.extractors.base import Extractor, DbCredentials
+from ingestion_lib.extractors.base import Extractor
+from ingestion_lib.utils.data_contract import DbCredentials
 
 
 class OracleExtractor(Extractor):
