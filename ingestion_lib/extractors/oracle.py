@@ -2,12 +2,13 @@ from ingestion_lib.extractors.base import Extractor
 
 
 class OracleExtractor(Extractor):
+
     def extract_data(self):
         # Oracle-specific extraction logic
         pass
 
     def creds(self):
-        pass
+        return self.table_contract.credentials
 
     def load_data_query(self, query: str):
         """

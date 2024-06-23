@@ -13,6 +13,7 @@ class TableContract(BaseModel):
     full_load: bool = False
     load_type: str = 'incremental'
     target_schema: str
+    credentials: Optional[any] = None
 
     class Config:
         anystr_lower = True
