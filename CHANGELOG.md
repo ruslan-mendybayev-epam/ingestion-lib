@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.7 (2024-06-23)
+
+### Fix
+
+* fix: circular dependency import ([`4f39395`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/4f3939516fceb9f090930eb5bba96a557b893956))
+
 ## v0.1.0-dev.6 (2024-06-23)
 
 ### Fix
