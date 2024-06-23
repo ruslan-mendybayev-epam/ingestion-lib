@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 
+from pydantic import BaseModel
+
 from ingestion_lib.utils.data_contract import TableContract
 from pyspark.sql.session import SparkSession, DataFrame
 
@@ -86,3 +88,12 @@ class JdbcExtractor(Extractor):
 
     def load_data_query(self, query: str):
         pass
+
+
+class DbCredentials(BaseModel):
+    """
+    Class containing credentials like user, password and jdbc_url for connecting to oracle_EBS
+    """
+    user: str
+    password: str
+    jdbc_url: str

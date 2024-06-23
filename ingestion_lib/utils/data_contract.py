@@ -1,6 +1,7 @@
 from typing import Optional, List
 
 from pydantic import BaseModel
+from ingestion_lib.extractors.base import DbCredentials
 
 
 class TableContract(BaseModel):
@@ -13,9 +14,8 @@ class TableContract(BaseModel):
     full_load: bool = False
     load_type: str = 'incremental'
     target_schema: str
-    credentials: Optional[any] = None
+    credentials: Optional[DbCredentials] = None
 
     class Config:
         anystr_lower = True
         allow_population_by_field_name = True
-

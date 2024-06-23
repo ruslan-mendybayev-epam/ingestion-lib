@@ -1,4 +1,4 @@
-from ingestion_lib.extractors.base import Extractor
+from ingestion_lib.extractors.base import Extractor, DbCredentials
 
 
 class OracleExtractor(Extractor):
@@ -7,7 +7,7 @@ class OracleExtractor(Extractor):
         # Oracle-specific extraction logic
         pass
 
-    def creds(self):
+    def creds(self) -> DbCredentials:
         return self.table_contract.credentials
 
     def load_data_query(self, query: str):
