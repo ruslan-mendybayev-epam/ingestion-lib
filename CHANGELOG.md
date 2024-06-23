@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.3 (2024-06-23)
+
+### Fix
+
+* fix: adjusted structure of TableContract ([`739fb6e`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/739fb6eac5be9bd9a77cdf39ac7117d99f895974))
+
 ## v0.1.0-dev.2 (2024-06-22)
 
 ### Fix
