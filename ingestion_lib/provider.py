@@ -29,6 +29,7 @@ class DatabricksIngestionProvider:
 
     def write_delta_unity(self, data, target_schema, table_name, options):
         full_name = f"{target_schema}.{table_name}"
+        print(f"Saving into {full_name}")
         (data.distinct().write.format("delta").mode("overwrite").options(**options).saveAsTable(full_name))
         return get_row_count_written(data, table_name=table_name)
 
