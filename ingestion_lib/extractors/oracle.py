@@ -22,13 +22,15 @@ class OracleExtractor(Extractor):
         :param query:
         :return:
         """
+        oracle_query = f"({query}) temp"
+        print(oracle_query)
         return (
             self.spark.read.format("jdbc")
             .option("url", self.creds().jdbc_url)
             .option("user", self.creds().user)
             .option("password", self.creds().password)
             .option("driver", "oracle.jdbc.driver.OracleDriver")
-            .option("dbtable", query)
+            .option("dbtable", oracle_query)
             .load()
         )
 

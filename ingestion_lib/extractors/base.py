@@ -10,6 +10,7 @@ class Extractor(ABC):
         self.table_contract = table_contract
         self.spark = spark
 
+
     @abstractmethod
     def creds(self):
         # TODO: I'm not sure about this being abstract. Probably better to parse proper section from contract
