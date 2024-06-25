@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.10 (2024-06-25)
+
+### Fix
+
+* fix: fixed condition ([`599f0a6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/599f0a6bd8f84bb4b3a149dbae33f70b1d9854db))
+
 ## v0.1.0-dev.9 (2024-06-25)
 
 ### Fix
