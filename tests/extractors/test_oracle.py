@@ -83,6 +83,13 @@ class TestOracleExtractor(unittest.TestCase):
         # Scenario 3: load_type is "one_time"
         self.extractor.table_contract = MagicMock(spec=TableContract, watermark_columns=["timestamp"], full_load="false", load_type="one_time")
         self.assertEqual(self.extractor._Extractor__build_condition(), "")
+    def test_build_select_query(self):
+        # Test scenarios for SQL query construction
+
+        # Scenario 1: Basic select query
+        self.extractor.table_contract = MagicMock(spec=TableContract, table_name="test_table", schema_name="test_schema", watermark_columns=None, full_load="false")
+        expected_query = "SELECT * FROM test_schema.test_table"
+        self.assertEqual(expected_query, self.extractor._Extractor__build_select_query())
 
 
 if __name__ == '__main__':
