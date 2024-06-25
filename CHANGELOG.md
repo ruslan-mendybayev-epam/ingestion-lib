@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## v0.1.0-dev.8 (2024-06-25)
+
+### Fix
+
+* fix: added extract_data call
+feat: added unit tests ([`cae76c6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/cae76c6c30acc6957acc22095238da67863f436f))
+
 ## v0.1.0-dev.7 (2024-06-23)
 
 ### Fix
