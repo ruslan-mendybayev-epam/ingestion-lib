@@ -1,12 +1,17 @@
+from pyspark.sql import SparkSession
+
 from ingestion_lib.extractors.base import Extractor
-from ingestion_lib.utils.data_contract import DbCredentials
+from ingestion_lib.utils.data_contract import DbCredentials, TableContract
 
 
 class OracleExtractor(Extractor):
 
+    def __init__(self, table_contract: TableContract, spark: SparkSession):
+        super().__init__(table_contract, spark)
+
     def extract_data(self):
         # Oracle-specific extraction logic
-        pass
+        return super().extract_data()
 
     def creds(self) -> DbCredentials:
         return self.table_contract.credentials
