@@ -67,7 +67,7 @@ class Extractor(ABC):
         schema = self.table_contract.schema_name
         if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(
                 self.table_contract.watermark_columns) == 1:
-            return f"SELECT * FROM [{schema}].[{table}]"
+            return f"SELECT * FROM {schema}.{table}"
         else:
             watermark_columns = ", ".join([f"({col})" for col in self.table_contract.watermark_columns])
             return f"""
