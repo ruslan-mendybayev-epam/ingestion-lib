@@ -53,7 +53,7 @@ def get_delta_write_options(table_contract: TableContract) -> dict:
     Returns dictionary with replaceWhere condition if watermark column exists and full load is set to false.
     Returns empty dictionary if there is no watermark column mentioned or full load is set to true.
     """
-    if not table_contract.watermark_columns or table_contract.full_load == "true" or table_contract.load_type == "one_time":
+    if not table_contract.watermark_columns or table_contract.full_load or table_contract.load_type == "one_time":
         return {"mergeSchema": True}
     elif len(table_contract.watermark_columns) == 1:
         return {
