@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## v0.1.0-dev.9 (2024-06-25)
+
+### Fix
+
+* fix: fixed oracle ([`771a743`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/771a743f5bdeeb8ccd54221126727de9527a0aee))
+
+### Unknown
+
+* fixed oracle ([`e7c4e15`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/e7c4e15fe6213461c19ecc1c2d20919215785b91))
+
 ## v0.1.0-dev.8 (2024-06-25)
 
 ### Fix
