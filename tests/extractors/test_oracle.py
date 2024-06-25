@@ -51,7 +51,7 @@ class TestOracleExtractor(unittest.TestCase):
             call.option().option('user', "user"),
             call.option().option('password', "password"),
             call.option().option('driver', "oracle.jdbc.driver.OracleDriver"),
-            call.option().option('dbtable', query),
+            call.option().option('dbtable', f"({query}) temp"),
             call.option().load()
         ]
         self.mock_format.assert_has_calls(expected_calls, any_order=False)
@@ -68,6 +68,22 @@ class TestOracleExtractor(unittest.TestCase):
         # Verify
         self.assertIsInstance(result, DataFrame)
         self.extractor.load_data_query.assert_called_once()  # Ensure load_data_query is called
+
+    def test_condition_returns_empty_string(self):
+        # Test scenarios where the condition should return an empty string
+
+        # Scenario 1: No watermark columns
+        self.extractor.table_contract = MagicMock(spec=TableContract, watermark_columns=[""], full_load=True, load_type="one_time")
+        self.assertEqual(self.extractor._Extractor__build_condition(), "")
+
+        # Scenario 2: full_load is "true"
+        self.extractor.table_contract = MagicMock(spec=TableContract, watermark_columns=["timestamp"], full_load="true", load_type="incremental")
+        self.assertEqual(self.extractor._Extractor__build_condition(), "")
+
+        # Scenario 3: load_type is "one_time"
+        self.extractor.table_contract = MagicMock(spec=TableContract, watermark_columns=["timestamp"], full_load="false", load_type="one_time")
+        self.assertEqual(self.extractor._Extractor__build_condition(), "")
+
 
 if __name__ == '__main__':
     unittest.main()

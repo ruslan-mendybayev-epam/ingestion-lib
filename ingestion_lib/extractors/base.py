@@ -43,7 +43,7 @@ class Extractor(ABC):
         :return:
         """
 
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or self.table_contract.load_type == "one_time":
+        if not self.table_contract.watermark_columns or self.table_contract.full_load or self.table_contract.load_type == "one_time":
             return ""
         elif len(self.table_contract.watermark_columns) == 1:
             return (
@@ -64,7 +64,7 @@ class Extractor(ABC):
         :return:
         """
         table = self.table_contract.table_name
-        schema = self.table_contract.schema
+        schema = self.table_contract.schema_name
         if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(
                 self.table_contract.watermark_columns) == 1:
             return f"SELECT * FROM [{schema}].[{table}]"

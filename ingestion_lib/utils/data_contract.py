@@ -16,7 +16,7 @@ class TableContract(BaseModel):
     table_name: str
     schema_name: str
     batch_timestamp: str
-    watermark_columns: List[str]
+    watermark_columns: Optional[List[str]]
     lower_bound: Optional[str] = None
     upper_bound: Optional[str] = None
     full_load: bool = False
