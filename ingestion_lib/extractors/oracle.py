@@ -10,7 +10,6 @@ class OracleExtractor(Extractor):
         super().__init__(table_contract, spark)
 
     def extract_data(self):
-        # Oracle-specific extraction logic
         return super().extract_data()
 
     def creds(self) -> DbCredentials:
