@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.16 (2024-06-25)
+
+### Fix
+
+* fix: condition in write options ([`73360d4`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/73360d4931980009a7c09afbd107afb01dcc7160))
+
 ## v0.1.0-dev.15 (2024-06-25)
 
 ### Fix
