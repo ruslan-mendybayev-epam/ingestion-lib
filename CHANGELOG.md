@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.12 (2024-06-25)
+
+### Fix
+
+* fix: write to unity as delta ([`ec72aa4`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/ec72aa45418ce7d9e961f706cb404a0a58a3e979))
+
 ## v0.1.0-dev.11 (2024-06-25)
 
 ### Fix
