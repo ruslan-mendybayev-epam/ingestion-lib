@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.13 (2024-06-25)
+
+### Fix
+
+* fix: changed method ([`987fb67`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/987fb67ac54bff8d46b44bc2e318c7483cee7b4e))
+
 ## v0.1.0-dev.12 (2024-06-25)
 
 ### Fix
