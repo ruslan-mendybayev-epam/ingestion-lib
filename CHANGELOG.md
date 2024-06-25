@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.11 (2024-06-25)
+
+### Fix
+
+* fix: select query ([`cce0a87`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/cce0a8715eb9c3682ed615e603acdfa7c2331b46))
+
 ## v0.1.0-dev.10 (2024-06-25)
 
 ### Fix
