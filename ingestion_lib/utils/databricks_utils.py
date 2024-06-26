@@ -1,6 +1,9 @@
+from abc import ABC, abstractmethod
+
+import yaml
+from pydantic import BaseModel
 from pyspark.sql import DataFrame
 from delta.tables import DeltaTable
-
 from ingestion_lib.utils.data_contract import TableContract
 
 
@@ -70,3 +73,60 @@ def get_delta_write_options(table_contract: TableContract) -> dict:
                 f"AND greatest({watermark_columnss}) <= '{table_contract.upper_bound}'",
             "mergeSchema": True,
         }
+
+
+class DatabricksWorkflow(ABC):
+    def __init__(self, input_path, template, output_path):
+        self.input_path = input_path
+        self.output_path = output_path
+        self.template = template
+
+    def read_yaml(self, file_path):
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
+
+    def write_yaml(self, data, file_path):
+        with open(file_path, 'w') as file:
+            yaml.safe_dump(data, file, default_flow_style=False, sort_keys=False)
+
+    @abstractmethod
+    def update_jobs(self):
+        pass
+
+
+class DatabricksJobUpdater(DatabricksWorkflow):
+    input_path:  str
+    template: str
+    output_path: str
+
+    def transform_dataset_name(self, name):
+        return name.replace('.', '_')
+
+    def update_jobs(self):
+        ingestion_data = self.read_yaml(self.input_path)
+        datasets = ingestion_data['datasets']
+
+        databricks_job_data = self.read_yaml(self.template)
+        if 'tasks' not in databricks_job_data['resources']['jobs']['ingestion']:
+            databricks_job_data['resources']['jobs']['ingestion']['tasks'] = []
+
+        existing_tasks = {task['task_key']: task for task in databricks_job_data['resources']['jobs']['ingestion']['tasks']}
+
+        for dataset in datasets:
+            task_key = self.transform_dataset_name(dataset['name'])
+            task_data = {
+                'task_key': task_key,
+                'existing_cluster_id': '1234-567890-abcde123',
+                'notebook_task': {
+                    'notebook_path': './hello.py'
+                }
+            }
+            if task_key in existing_tasks:
+                existing_tasks[task_key].update(task_data)
+            else:
+                databricks_job_data['resources']['jobs']['ingestion']['tasks'].append(task_data)
+
+        # Rebuild the tasks list from the updated dictionary
+        databricks_job_data['resources']['jobs']['ingestion']['tasks'] = list(existing_tasks.values())
+
+        self.write_yaml(databricks_job_data, self.output_path)
