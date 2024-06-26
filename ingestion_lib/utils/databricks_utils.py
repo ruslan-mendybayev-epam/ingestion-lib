@@ -75,11 +75,11 @@ def get_delta_write_options(table_contract: TableContract) -> dict:
         }
 
 
-class DatabricksWorkflow(ABC):
-    def __init__(self, input_path, template, output_path):
-        self.input_path = input_path
+class WorkflowGenerator(ABC):
+    def __init__(self, ingestion_contract_path, workflow_template_path, output_path):
+        self.ingestion_contract_path = ingestion_contract_path
+        self.workflow_template_path = workflow_template_path
         self.output_path = output_path
-        self.template = template
 
     def read_yaml(self, file_path):
         with open(file_path, 'r') as file:
@@ -90,47 +90,41 @@ class DatabricksWorkflow(ABC):
             yaml.safe_dump(data, file, default_flow_style=False, sort_keys=False)
 
     @abstractmethod
-    def update_jobs(self):
+    def generate_workflow(self):
         pass
 
 
-class DatabricksJobUpdater(DatabricksWorkflow):
-    input_path:  str
-    template: str
-    output_path: str
+class DatabricksWorkflowGenerator(WorkflowGenerator):
+    def __init__(self, ingestion_contract_path, workflow_template_path, output_path, task_config):
+        super().__init__(ingestion_contract_path, workflow_template_path, output_path)
+        self.task_config = task_config
 
     def transform_dataset_name(self, name):
         return name.replace('.', '_')
 
-    def update_jobs(self):
-        ingestion_data = self.read_yaml(self.input_path)
-        datasets = ingestion_data.get('datasets', [])
+    def generate_workflow(self):
+        ingestion_contract = self.read_yaml(self.ingestion_contract_path)
+        datasets = ingestion_contract.get('datasets', [])
 
-        databricks_job_data = self.read_yaml(self.template)
-        tasks_section = databricks_job_data.setdefault('resources', {}).setdefault('jobs', {}).setdefault('ingestion', {}).setdefault('tasks', [])
+        workflow_template = self.read_yaml(self.workflow_template_path)
+        tasks_section = workflow_template.setdefault('resources', {}).setdefault('jobs', {}).setdefault('ingestion', {}).setdefault('tasks', [])
 
         existing_tasks = {task['task_key']: task for task in tasks_section if 'task_key' in task}
 
         for dataset in datasets:
             task_key = self.transform_dataset_name(dataset['name'])
-            task_data = {
-                'task_key': task_key,
-                'existing_cluster_id': '1234-567890-abcde123',
-                'notebook_task': {
-                    'notebook_path': './hello.py'
-                }
-            }
+            task_data = {'task_key': task_key}
+            task_data.update(self.task_config)  # Merge the task configuration
+
             if task_key in existing_tasks:
                 existing_tasks[task_key].update(task_data)
             else:
                 existing_tasks[task_key] = task_data
 
-        # Update the tasks list only if there are tasks to add
         if existing_tasks:
-            databricks_job_data['resources']['jobs']['ingestion']['tasks'] = list(existing_tasks.values())
+            workflow_template['resources']['jobs']['ingestion']['tasks'] = list(existing_tasks.values())
         else:
-            # Optionally remove the tasks key if no tasks exist
-            databricks_job_data['resources']['jobs']['ingestion'].pop('tasks', None)
+            workflow_template['resources']['jobs']['ingestion'].pop('tasks', None)
 
-        self.write_yaml(databricks_job_data, self.output_path)
+        self.write_yaml(workflow_template, self.output_path)
 
