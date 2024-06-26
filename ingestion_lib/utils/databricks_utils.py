@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
 import yaml
-from pydantic import BaseModel
-from pyspark.sql import DataFrame
 from delta.tables import DeltaTable
+from pyspark.sql import DataFrame
+
 from ingestion_lib.utils.data_contract import TableContract
 
 
@@ -104,13 +104,12 @@ class DatabricksJobUpdater(DatabricksWorkflow):
 
     def update_jobs(self):
         ingestion_data = self.read_yaml(self.input_path)
-        datasets = ingestion_data['datasets']
+        datasets = ingestion_data.get('datasets', [])
 
         databricks_job_data = self.read_yaml(self.template)
-        if 'tasks' not in databricks_job_data['resources']['jobs']['ingestion']:
-            databricks_job_data['resources']['jobs']['ingestion']['tasks'] = []
+        tasks_section = databricks_job_data.setdefault('resources', {}).setdefault('jobs', {}).setdefault('ingestion', {}).setdefault('tasks', [])
 
-        existing_tasks = {task['task_key']: task for task in databricks_job_data['resources']['jobs']['ingestion']['tasks']}
+        existing_tasks = {task['task_key']: task for task in tasks_section if 'task_key' in task}
 
         for dataset in datasets:
             task_key = self.transform_dataset_name(dataset['name'])
@@ -124,9 +123,14 @@ class DatabricksJobUpdater(DatabricksWorkflow):
             if task_key in existing_tasks:
                 existing_tasks[task_key].update(task_data)
             else:
-                databricks_job_data['resources']['jobs']['ingestion']['tasks'].append(task_data)
+                existing_tasks[task_key] = task_data
 
-        # Rebuild the tasks list from the updated dictionary
-        databricks_job_data['resources']['jobs']['ingestion']['tasks'] = list(existing_tasks.values())
+        # Update the tasks list only if there are tasks to add
+        if existing_tasks:
+            databricks_job_data['resources']['jobs']['ingestion']['tasks'] = list(existing_tasks.values())
+        else:
+            # Optionally remove the tasks key if no tasks exist
+            databricks_job_data['resources']['jobs']['ingestion'].pop('tasks', None)
 
         self.write_yaml(databricks_job_data, self.output_path)
+
