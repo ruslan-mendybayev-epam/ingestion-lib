@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## v0.1.0-dev.17 (2024-06-26)
+
+### Feature
+
+* feat: version 0.2 ([`1181ca3`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/1181ca3212775d89ec0e1b17339c04d4db6813d5))
+
+* feat: version 0.1 ([`eec1e3f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/eec1e3fc8511d6916eeea27a83b3bf238546a0f8))
+
+### Fix
+
+* fix: renamed classes ([`b3df19c`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b3df19caaaf9fe4461c07c3ca032892af9d5804d))
+
+### Unknown
+
+* Merge pull request #6 from ruslan-mendybayev-epam/feature/yaml-bundle
+
+Databricks Workflow generator ([`5f34b04`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/5f34b04a806cd919da3b4dd85e1c18dc877c2200))
+
 ## v0.1.0-dev.16 (2024-06-25)
 
 ### Fix
