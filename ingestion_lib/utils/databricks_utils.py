@@ -1,5 +1,8 @@
-from pyspark.sql import DataFrame
+from abc import ABC, abstractmethod
+
+import yaml
 from delta.tables import DeltaTable
+from pyspark.sql import DataFrame
 
 from ingestion_lib.utils.data_contract import TableContract
 
@@ -53,7 +56,7 @@ def get_delta_write_options(table_contract: TableContract) -> dict:
     Returns dictionary with replaceWhere condition if watermark column exists and full load is set to false.
     Returns empty dictionary if there is no watermark column mentioned or full load is set to true.
     """
-    if not table_contract.watermark_columns or table_contract.full_load == True or table_contract.load_type == "one_time":
+    if not table_contract.watermark_columns or table_contract.full_load or table_contract.load_type == "one_time":
         return {"mergeSchema": True}
     elif len(table_contract.watermark_columns) == 1:
         return {
@@ -92,3 +95,57 @@ def get_dbutils(spark):
         dbutils = ipython.user_ns["dbutils"] if ipython else None
 
     return dbutils
+
+class WorkflowGenerator(ABC):
+    def __init__(self, ingestion_contract_path, workflow_template_path, output_path):
+        self.ingestion_contract_path = ingestion_contract_path
+        self.workflow_template_path = workflow_template_path
+        self.output_path = output_path
+
+    def read_yaml(self, file_path):
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
+
+    def write_yaml(self, data, file_path):
+        with open(file_path, 'w') as file:
+            yaml.safe_dump(data, file, default_flow_style=False, sort_keys=False)
+
+    @abstractmethod
+    def generate_workflow(self):
+        pass
+
+
+class DatabricksWorkflowGenerator(WorkflowGenerator):
+    def __init__(self, ingestion_contract_path, workflow_template_path, output_path, task_config):
+        super().__init__(ingestion_contract_path, workflow_template_path, output_path)
+        self.task_config = task_config
+
+    def transform_dataset_name(self, name):
+        return name.replace('.', '_')
+
+    def generate_workflow(self):
+        ingestion_contract = self.read_yaml(self.ingestion_contract_path)
+        datasets = ingestion_contract.get('datasets', [])
+
+        workflow_template = self.read_yaml(self.workflow_template_path)
+        tasks_section = workflow_template.setdefault('resources', {}).setdefault('jobs', {}).setdefault('ingestion', {}).setdefault('tasks', [])
+
+        existing_tasks = {task['task_key']: task for task in tasks_section if 'task_key' in task}
+
+        for dataset in datasets:
+            task_key = self.transform_dataset_name(dataset['name'])
+            task_data = {'task_key': task_key}
+            task_data.update(self.task_config)  # Merge the task configuration
+
+            if task_key in existing_tasks:
+                existing_tasks[task_key].update(task_data)
+            else:
+                existing_tasks[task_key] = task_data
+
+        if existing_tasks:
+            workflow_template['resources']['jobs']['ingestion']['tasks'] = list(existing_tasks.values())
+        else:
+            workflow_template['resources']['jobs']['ingestion'].pop('tasks', None)
+
+        self.write_yaml(workflow_template, self.output_path)
+

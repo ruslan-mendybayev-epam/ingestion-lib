@@ -33,6 +33,8 @@ class OracleExtractor(Extractor):
         Returns:
         - DataFrame: A Spark DataFrame containing the data retrieved from the database based on the input query.
         """
+        oracle_query = f"({query}) temp"
+        print(oracle_query)
         return (
             self.spark.read.format("jdbc")
             .option("url", self.creds.jdbc_url)

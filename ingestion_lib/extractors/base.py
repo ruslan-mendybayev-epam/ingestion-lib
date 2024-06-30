@@ -3,6 +3,8 @@ from abc import ABC, abstractmethod
 
 from pyspark.sql.session import DataFrame
 
+from ingestion_lib.utils.data_contract import TableContract
+
 
 class DbCredentials(BaseModel):
     """

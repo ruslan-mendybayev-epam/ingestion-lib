@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='ingestion-lib',
-    version='0.0.1',
+    version='0.0.3',
     author='Ruslan Mendybayev',
     author_email='ruslan_mendybayev@epam.com',
     description='Library for data ingestion',
@@ -21,6 +21,6 @@ setup(
     ],
     python_requires='>=3.10',
     install_requires=[
-        'pydantic>=1.10.6',
+        'pydantic==1.10.6',
     ],
 )

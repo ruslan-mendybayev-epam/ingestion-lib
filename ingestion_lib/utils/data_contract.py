@@ -1,5 +1,15 @@
-from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
+
+from pydantic import BaseModel
+
+
+class DbCredentials(BaseModel):
+    """
+    Class containing credentials like user, password and jdbc_url for connecting to oracle_EBS
+    """
+    user: str
+    password: str
+    jdbc_url: str
 
 class TableContract(BaseModel):
     table_name: str
