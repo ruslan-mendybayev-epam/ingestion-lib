@@ -21,6 +21,9 @@ class OracleExtractor(Extractor):
         self.table_contract = table_contract
         self.spark = spark
         self.creds = creds
+        self.table = self.table_contract.table_name
+        self.schema = self.table_contract.schema_name
+        self.watermark_columns = self.table_contract.watermark_columns
 
     def load_data_query(self, query: str):
         """
@@ -33,8 +36,6 @@ class OracleExtractor(Extractor):
         Returns:
         - DataFrame: A Spark DataFrame containing the data retrieved from the database based on the input query.
         """
-        oracle_query = f"({query}) temp"
-        print(oracle_query)
         return (
             self.spark.read.format("jdbc")
             .option("url", self.creds.jdbc_url)
@@ -42,6 +43,40 @@ class OracleExtractor(Extractor):
             .option("user", self.creds.user)
             .option("password", self.creds.password)
             .option("driver", "oracle.jdbc.driver.OracleDriver")
+            .load()
+        )
+    
+    def load_data_query_partitioned(self, query: str, watermark_column: str):
+        """
+        This method establishes a connection to a database using JDBC URL, credentials, Oracle JDBC driver and a specified SQL query.
+        It reads the data into a Spark DataFrame which is partitioned on the basis of jdbc config.
+
+        Parameters:
+        - query (str): The SQL query string used to select data from the database.
+        - watermark_column (str): Modified date (timestamp) column
+
+        Returns:
+        - DataFrame: A Spark DataFrame containing the data retrieved from the database based on the input query.
+        """
+        min_max_query = f"(select min({watermark_column}), max({watermark_column}) from ({query})) temp"
+        min_max_df = self.load_data_query(min_max_query)
+        lower_bound = min_max_df.collect()[0][0].strftime('%Y%m%d%H%M%S')
+        upper_bound = min_max_df.collect()[0][1].strftime('%Y%m%d%H%M%S')
+        timestamp_query = f"{self.table}.*, To_NUMBER(TO_CHAR({watermark_column}, 'YYYYMMDDHH24MISS')) timestamp_num"
+        updated_query = query.replace("*", timestamp_query)
+
+
+        return (
+            self.spark.read.format("jdbc")
+            .option("url", self.creds.jdbc_url)
+            .option("dbtable", updated_query)
+            .option("user", self.creds.user)
+            .option("password", self.creds.password)
+            .option("driver", "oracle.jdbc.driver.OracleDriver")
+            .option("partitionColumn", "timestamp_num")
+            .option("lowerBound", lower_bound)
+            .option("upperBound", upper_bound)
+            .option("numPartitions", "32")
             .load()
         )
 
@@ -58,11 +93,15 @@ class OracleExtractor(Extractor):
             condition = self.__build_condition()
             query = f"({select_query}{condition}) temp"
             print(f"ingestion query: {query}")
-            data = self.load_data_query(query)
+            if not self.watermark_columns:           
+                data = self.load_data_query(query)
+            elif len(self.watermark_columns) == 1:
+                data = self.load_data_query_partitioned(query, self.watermark_columns[0]).drop("timestamp_num")
             # TODO: Add logging at debug level
-            if self.table_contract.watermark_columns and len(self.table_contract.watermark_columns) > 1:
+            if self.watermark_columns and len(self.watermark_columns) > 1:
+                data = self.load_data_query_partitioned(query, "watermark_column_")
                 # dropping column 'watermark_column' which is having max timestamp if there are multiple timestamp columns
-                data = data.drop("_watermark_column_")
+                data = data.drop("watermark_column_", "timestamp_num")
             return data
 
     def __build_condition(self) -> str:
@@ -73,16 +112,16 @@ class OracleExtractor(Extractor):
         :return:
         """
 
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == True or self.table_contract.load_type == "one_time":
+        if not self.watermark_columns or self.table_contract.full_load == True or self.table_contract.load_type == "one_time":
             return ""
-        elif len(self.table_contract.watermark_columns) == 1:
+        elif len(self.watermark_columns) == 1:
             return (
-                    f" WHERE {self.table_contract.watermark_columns[0]} >= '{self.table_contract.lower_bound}' "
-                    + f"AND {self.table_contract.watermark_columns[0]} < '{self.table_contract.upper_bound}'"
+                    f" WHERE {self.watermark_columns[0]} >= '{self.table_contract.lower_bound}' "
+                    + f"AND {self.watermark_columns[0]} < '{self.table_contract.upper_bound}'"
             )
         else:
             return (
-                    f" WHERE _watermark_column_ >= '{self.table_contract.lower_bound}' " + f"AND _watermark_column_ < '{self.table_contract.upper_bound}'"
+                    f" WHERE watermark_column_ >= '{self.table_contract.lower_bound}' " + f"AND watermark_column_ < '{self.table_contract.upper_bound}'"
             )
 
     def __build_select_query(self) -> str:
@@ -93,19 +132,17 @@ class OracleExtractor(Extractor):
 
         :return:
         """
-        table = self.table_contract.table_name
-        schema = self.table_contract.schema_name
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == True or len(self.table_contract.watermark_columns) == 1:
-            return f"SELECT * FROM {schema}.{table}"
+        if not self.watermark_columns or self.table_contract.full_load == True or len(self.watermark_columns) == 1:
+            return f"SELECT * FROM {self.schema}.{self.table}"
         else:
-            watermark_columns = ", ".join([f"({col})" for col in self.table_contract.watermark_columns])
+            watermark_columns = ", ".join([f"({col})" for col in self.watermark_columns])
             return f"""
                     SELECT *
                     FROM (
                         SELECT 
                         *, 
-                        (SELECT MAX(_watermark_column_)
-                            FROM (VALUES {watermark_columns}) AS last_updated(_watermark_column_)) 
-                        AS _watermark_column_
+                        (SELECT MAX(watermark_column_)
+                            FROM (VALUES {watermark_columns}) AS last_updated(watermark_column_)) 
+                        AS watermark_column_
                     
                     """
