@@ -1,23 +1,26 @@
-from pydantic import BaseModel, Field
 from typing import Optional, List
 
+from pydantic import BaseModel
+
+
+class DbCredentials(BaseModel):
+    """
+    Class containing credentials like user, password and jdbc_url for connecting to oracle_EBS
+    """
+    user: str
+    password: str
+    jdbc_url: str
 
 class TableContract(BaseModel):
-    db_name: str
     table_name: str
-    schema_: str
+    schema_name: str
     batch_timestamp: str
-    watermark_columns: List[str]
+    watermark_columns: list[str]
     lower_bound: Optional[str] = None
     upper_bound: Optional[str] = None
     full_load: bool = False
     load_type: str = 'incremental'
     target_schema: str
-    mount_point: str
 
     class Config:
-        anystr_lower = True
-        allow_population_by_field_name = True
-        fields = {
-            'schema_': {'alias': 'schema'}
-        }
+        str_to_lower = True  # Example of Pydantic config: convert all strings to lower case
