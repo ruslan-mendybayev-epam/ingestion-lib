@@ -116,8 +116,8 @@ class OracleExtractor(Extractor):
             return ""
         elif len(self.watermark_columns) == 1:
             return (
-                    f" WHERE {self.watermark_columns[0]} >= '{self.table_contract.lower_bound}' "
-                    + f"AND {self.watermark_columns[0]} < '{self.table_contract.upper_bound}'"
+                    f""" WHERE {self.watermark_columns[0]} >= TO_DATE('{self.table_contract.lower_bound}', 'YYYY-MM-DD"T"HH24:MI:SS') """
+                    + f"""AND {self.watermark_columns[0]} < TO_DATE('{self.table_contract.upper_bound}', 'YYYY-MM-DD"T"HH24:MI:SS')"""
             )
         else:
             return (
