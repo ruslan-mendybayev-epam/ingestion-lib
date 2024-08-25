@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
+from typing import Union
 
 from pyspark.sql.session import SparkSession, DataFrame
 
-from ingestion_lib.utils.data_contract import TableContract
+from ingestion_lib.utils.data_contract import TableContract, DataContract, APIDataContract
 
 
 class Extractor(ABC):
-    def __init__(self, table_contract: TableContract, spark: SparkSession):
-        self.table_contract = table_contract
+    def __init__(self, table_contract: Union[DataContract, TableContract, APIDataContract], spark: SparkSession):
+        self.data_contract = table_contract
         self.spark = spark
 
 
@@ -30,7 +31,7 @@ class Extractor(ABC):
         query = f"{select_query}{condition}"
         data = self.load_data_query(query)
         # TODO: Add logging at debug level
-        if self.table_contract.watermark_columns and len(self.table_contract.watermark_columns) > 1:
+        if self.data_contract.watermark_columns and len(self.data_contract.watermark_columns) > 1:
             # dropping column 'watermark_column' which is having max timestamp if there are multiple timestamp columns
             data = data.drop("_watermark_column_")
         return data
@@ -43,16 +44,16 @@ class Extractor(ABC):
         :return:
         """
 
-        if not self.table_contract.watermark_columns or self.table_contract.full_load or self.table_contract.load_type == "one_time":
+        if not self.data_contract.watermark_columns or self.data_contract.full_load or self.data_contract.load_type == "one_time":
             return ""
-        elif len(self.table_contract.watermark_columns) == 1:
+        elif len(self.data_contract.watermark_columns) == 1:
             return (
-                    f" WHERE {self.table_contract.watermark_columns[0]} >= '{self.table_contract.lower_bound}' "
-                    + f"AND {self.table_contract.watermark_columns[0]} < '{self.table_contract.upper_bound}'"
+                    f" WHERE {self.data_contract.watermark_columns[0]} >= '{self.data_contract.lower_bound}' "
+                    + f"AND {self.data_contract.watermark_columns[0]} < '{self.data_contract.upper_bound}'"
             )
         else:
             return (
-                    f" WHERE _watermark_column_ >= '{self.table_contract.lower_bound}' " + f"AND _watermark_column_ < '{self.table_contract.upper_bound}'"
+                    f" WHERE _watermark_column_ >= '{self.data_contract.lower_bound}' " + f"AND _watermark_column_ < '{self.data_contract.upper_bound}'"
             )
 
     def __build_select_query(self) -> str:
@@ -63,13 +64,13 @@ class Extractor(ABC):
 
         :return:
         """
-        table = self.table_contract.table_name
-        schema = self.table_contract.schema_name
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(
-                self.table_contract.watermark_columns) == 1:
+        table = self.data_contract.table_name
+        schema = self.data_contract.schema_name
+        if not self.data_contract.watermark_columns or self.data_contract.full_load == "true" or len(
+                self.data_contract.watermark_columns) == 1:
             return f"SELECT * FROM {schema}.{table}"
         else:
-            watermark_columns = ", ".join([f"({col})" for col in self.table_contract.watermark_columns])
+            watermark_columns = ", ".join([f"({col})" for col in self.data_contract.watermark_columns])
             return f"""
                     SELECT *
                     FROM (

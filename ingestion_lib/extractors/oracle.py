@@ -13,7 +13,7 @@ class OracleExtractor(Extractor):
         return super().extract_data()
 
     def creds(self) -> DbCredentials:
-        return self.table_contract.credentials
+        return self.data_contract.credentials
 
     def load_data_query(self, query: str):
         """

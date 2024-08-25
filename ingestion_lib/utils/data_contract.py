@@ -2,6 +2,9 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
+class DataContract(BaseModel):
+    class Config:
+        allow_population_by_field_name = True
 
 class DbCredentials(BaseModel):
     """
@@ -12,7 +15,7 @@ class DbCredentials(BaseModel):
     jdbc_url: str
 
 
-class TableContract(BaseModel):
+class TableContract(DataContract):
     table_name: str
     schema_name: str
     batch_timestamp: str
@@ -24,7 +27,10 @@ class TableContract(BaseModel):
     target_schema: str
     credentials: Optional[DbCredentials] = None
 
-    class Config:
-        anystr_lower = True
-        allow_population_by_field_name = True
-
+class APIDataContract(DataContract):
+    base_url: str
+    api_key: str  # or other authentication fields
+    swagger_path: str
+    endpoint_url: str
+    endpoint_model: str
+    credentials: DbCredentials
