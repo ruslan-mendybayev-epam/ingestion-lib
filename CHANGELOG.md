@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.18 (2024-08-26)
+
+### Feature
+
+* feat: rest api extractor ([`26d9f25`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/26d9f25b5522a1b299bba061023919c849ea3bac))
+
 ## v0.1.0-dev.17 (2024-06-26)
 
 ### Feature
@@ -175,6 +181,8 @@ feat: added unit tests ([`cae76c6`](https://github.com/ruslan-mendybayev-epam/in
 
 feat: add jdbc data extraction ([`7024a3a`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/7024a3a8e676e59cb1001ca6b37a3b58ce03183b))
 
+* wip: added partially restructured extraction for oracle. ([`c7f29b6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/c7f29b6d40416c9cb3c96165c234d22959e6b0ba))
+
 * updated main.yml ([`852f930`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/852f93085dca7d0ae0948874c9a84c14ad416e03))
 
 * Update main.yml ([`2a99fd0`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/2a99fd0b991fdcdc47e839eb891a300b55c79a4c))
@@ -190,7 +198,5 @@ feat: add jdbc data extraction ([`7024a3a`](https://github.com/ruslan-mendybayev
 ### Unknown
 
 * Create main.yml ([`26f3e7c`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/26f3e7ceea4b5d5533e0f4d4fcca47b6e03d0c4c))
-
-* wip: added partially restructured extraction for oracle. ([`c7f29b6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/c7f29b6d40416c9cb3c96165c234d22959e6b0ba))
 
 * Initial commit ([`d72808b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/d72808b213016ac48fc69251abb2dbddd7f3d32e))
