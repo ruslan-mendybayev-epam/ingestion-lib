@@ -1,11 +1,23 @@
 from abc import ABC, abstractmethod
+from typing import Union
 
 from pyspark.sql.session import SparkSession, DataFrame
 
-from ingestion_lib.utils.data_contract import TableContract
+from ingestion_lib.utils.data_contract import TableContract, APIDataContract
 
 
 class Extractor(ABC):
+
+    def __init__(self, contract: Union[TableContract|APIDataContract], spark: SparkSession):
+        self.data_contract = contract
+        self.spark = spark
+
+    @abstractmethod
+    def extract_data(self):
+        pass
+
+
+class JdbcExtractor(ABC):
     def __init__(self, table_contract: TableContract, spark: SparkSession):
         self.table_contract = table_contract
         self.spark = spark
@@ -82,10 +94,3 @@ class Extractor(ABC):
                     """
 
 
-class JdbcExtractor(Extractor):
-
-    def creds(self):
-        pass
-
-    def load_data_query(self, query: str):
-        pass
