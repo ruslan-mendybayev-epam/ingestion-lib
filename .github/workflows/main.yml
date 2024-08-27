@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.11π'
+          python-version: '3.11'
 
       - name: Poetry install
         run: |
