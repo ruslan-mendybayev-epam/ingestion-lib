@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.0-dev.19 (2024-08-27)
+
+### Feature
+
+* feat: added schema support for API collections conversion ([`eaf06d0`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/eaf06d0479302d25878d97148ed331a43dc7a8f9))
+
 ## v0.1.0-dev.18 (2024-08-26)
 
 ### Feature
