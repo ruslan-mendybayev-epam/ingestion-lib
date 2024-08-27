@@ -11,8 +11,14 @@ class DbCredentials(BaseModel):
     password: str
     jdbc_url: str
 
+
 class DataContract(BaseModel):
     batch_timestamp: str
+    scope: str
+    env_key: str
+    target_schema: str
+    table_name: str
+
 
 class TableContract(DataContract):
     table_name: str
@@ -30,10 +36,11 @@ class TableContract(DataContract):
         anystr_lower = True
         allow_population_by_field_name = True
 
+
 class APIDataContract(DataContract):
     base_url: str
     api_key: str  # or other authentication fields
     spec_path: str
     endpoint_url: str
-    model: str
+    model: str # tricky part to be honest
     credentials: DbCredentials

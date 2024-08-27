@@ -3,8 +3,11 @@ from typing import Union
 
 import httpx
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, StringType
 
 from ingestion_lib.extractors.base import Extractor
+from ingestion_lib.model.base import SchemaFactory
+from ingestion_lib.model.holman import HOLMAN_VEHICLES_SCHEMA
 from ingestion_lib.utils.data_contract import TableContract, APIDataContract
 
 
@@ -41,17 +44,16 @@ class HolmanRestAPIExtractor(RestAPIExtractor):
         model_name = self.data_contract.model
         response = client.get(url, headers=header)
         initial_data = response.json()
+        result = initial_data[model_name]
 
-        total_pages = initial_data.get('totalPages', 1)
-        df = self.spark.read.json(self.spark.sparkContext.parallelize([initial_data[model_name]]))
+        total_pages = int(initial_data.get('totalPages', 1))
 
         for page in range(2, total_pages + 1):
             response =client.get(f"{url}?pageNumber={page}", headers=header)
             response.raise_for_status()
             page_data = response.json()
-            page_df = self.spark.read.json(self.spark.sparkContext.parallelize([page_data[model_name]]))
-            df = df.union(page_df)
-        return df
+            result.extend(page_data[model_name])
+        return result
 
     def auth_header(self, client):
         """
@@ -73,6 +75,11 @@ class HolmanRestAPIExtractor(RestAPIExtractor):
             print("Status code:", response.status_code)
             print("Response:", response.text)
         return None
+
+    def convert_collection(self, collection):
+        schema = SchemaFactory.get_schema(self.data_contract.table_name)
+        df = self.spark.createDataFrame(collection, schema=schema)
+        return df
 
     def __init__(self, contract: APIDataContract, spark: SparkSession):
         super().__init__(contract, spark)
