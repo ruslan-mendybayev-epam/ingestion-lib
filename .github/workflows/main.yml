@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.11π'
 
       - name: Poetry install
         run: |
@@ -34,6 +34,7 @@ jobs:
         uses: python-semantic-release/python-semantic-release@v8.0.8
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          root_options: -vv
 
       - name: Build library
         run: |
