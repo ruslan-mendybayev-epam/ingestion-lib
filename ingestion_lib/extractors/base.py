@@ -1,13 +1,27 @@
 from abc import ABC, abstractmethod
+from typing import Union
 
-from ingestion_lib.utils.data_contract import TableContract
 from pyspark.sql.session import SparkSession, DataFrame
+
+from ingestion_lib.utils.data_contract import TableContract, APIDataContract
 
 
 class Extractor(ABC):
+
+    def __init__(self, contract: Union[TableContract|APIDataContract], spark: SparkSession):
+        self.data_contract = contract
+        self.spark = spark
+
+    @abstractmethod
+    def extract_data(self):
+        pass
+
+
+class JdbcExtractor(ABC):
     def __init__(self, table_contract: TableContract, spark: SparkSession):
         self.table_contract = table_contract
         self.spark = spark
+
 
     @abstractmethod
     def creds(self):
@@ -41,7 +55,7 @@ class Extractor(ABC):
         :return:
         """
 
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or self.table_contract.load_type == "one_time":
+        if not self.table_contract.watermark_columns or self.table_contract.full_load or self.table_contract.load_type == "one_time":
             return ""
         elif len(self.table_contract.watermark_columns) == 1:
             return (
@@ -62,9 +76,10 @@ class Extractor(ABC):
         :return:
         """
         table = self.table_contract.table_name
-        schema = self.table_contract.schema
-        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(self.table_contract.watermark_columns) == 1:
-            return f"SELECT * FROM [{schema}].[{table}]"
+        schema = self.table_contract.schema_name
+        if not self.table_contract.watermark_columns or self.table_contract.full_load == "true" or len(
+                self.table_contract.watermark_columns) == 1:
+            return f"SELECT * FROM {schema}.{table}"
         else:
             watermark_columns = ", ".join([f"({col})" for col in self.table_contract.watermark_columns])
             return f"""
@@ -77,3 +92,5 @@ class Extractor(ABC):
                         AS _watermark_column_
                     
                     """
+
+

@@ -1,0 +1,7 @@
+default_dataset: &default_dataset
+  active: true
+datasets:
+  - name: 'hr.something'
+    <<: *default_dataset
+  - name: 'ar.something'
+    <<: *default_dataset

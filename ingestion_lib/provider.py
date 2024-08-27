@@ -27,6 +27,15 @@ class DatabricksIngestionProvider:
         (data.distinct().write.format("delta").mode("overwrite").options(**options).save(location))
         return get_row_count_written(data, location=location)
 
+    def write_delta_unity(self, data, target_schema, table_name, options):
+        full_name = f"{target_schema}.{table_name}"
+        print(f"Saving into {full_name}")
+        print(f"Options: {options}")
+        data.printSchema()
+        data.show()
+        (data.distinct().write.format("delta").mode("overwrite").options(**options).saveAsTable(full_name))
+        return get_row_count_written(data, table_name=table_name)
+
     def execute_ingestion(self):
         """
         Missing steps:
@@ -43,8 +52,11 @@ class DatabricksIngestionProvider:
         data = self.extractor.extract_data()
         normalized_data = self.__add_timestamp_column(table_contract.batch_timestamp, self.normalize_data(data))
 
-        result = self.write_data(normalized_data, table_contract.target_schema, table_contract.mount_point,
-                                 table_contract.table_name, options=get_delta_write_options(table_contract))
+        result = self.write_delta_unity(normalized_data, table_contract.target_schema,
+                                        table_contract.table_name, options=get_delta_write_options(table_contract))
+
+        print(f"Table {table_contract.table_name} is successfully ingested with the row count {result}")
+
 
     def __add_timestamp_column(self, batch_timestamp: str, df: DataFrame) -> DataFrame:
         """
