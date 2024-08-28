@@ -48,7 +48,7 @@ class DatabricksIngestionProvider:
         Details: The row count is logged, and the method returns the row count.
         :return:
         """
-        table_contract = self.extractor.table_contract
+        table_contract = self.extractor.data_contract
         data = self.extractor.extract_data()
         normalized_data = self.__add_timestamp_column(table_contract.batch_timestamp, self.normalize_data(data))
 

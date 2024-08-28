@@ -23,6 +23,10 @@ class TestRestApiExtractor(unittest.TestCase):
             api_key='test_api_key',
             spec_path='path/to/swagger',
             endpoint_url='http://api.example.com/data',
+            scope='external',
+            env_key='env-name',
+            target_schema='bronze_holman',
+            table_name='vehicles',
             model='Inventory',
             credentials=self.db_credentials
         )

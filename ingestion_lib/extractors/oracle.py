@@ -1,10 +1,10 @@
 from pyspark.sql import SparkSession
 
-from ingestion_lib.extractors.base import Extractor
+from ingestion_lib.extractors.base import Extractor, JdbcExtractor
 from ingestion_lib.utils.data_contract import DbCredentials, TableContract
 
 
-class OracleExtractor(Extractor):
+class OracleExtractor(JdbcExtractor):
 
     def __init__(self, table_contract: TableContract, spark: SparkSession):
         super().__init__(table_contract, spark)
@@ -13,7 +13,7 @@ class OracleExtractor(Extractor):
         return super().extract_data()
 
     def creds(self) -> DbCredentials:
-        return self.table_contract.credentials
+        return self.data_contract.credentials
 
     def load_data_query(self, query: str):
         """
