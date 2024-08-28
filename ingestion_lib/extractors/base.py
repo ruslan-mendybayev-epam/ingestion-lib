@@ -17,8 +17,10 @@ class Extractor(ABC):
         pass
 
 
-class JdbcExtractor(ABC):
+class JdbcExtractor(Extractor):
+
     def __init__(self, table_contract: TableContract, spark: SparkSession):
+        super().__init__(table_contract, spark)
         self.table_contract = table_contract
         self.spark = spark
 
