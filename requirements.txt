@@ -1,8 +1,0 @@
-pydantic==1.10.6
-pyspark>=3.5.1
-delta-spark
-
-setuptools>=70.1.0
-yaml>=0.2.5
-pyyaml>=6.0.1
-delta>=0.4.2
