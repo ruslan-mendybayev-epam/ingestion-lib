@@ -1,4 +1,254 @@
 # CHANGELOG
 
-## v0.0.3
-Stable Release
+
+
+## v0.0.6 (2024-08-27)
+
+### Chore
+
+* chore: fixed config ([`c9bcf2f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/c9bcf2f1e44745be780631176cd9193bfa0195cb))
+
+* chore: fixed config“ ([`fc1ea4b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/fc1ea4b4d964b52066c4e23bee67fcad0272037e))
+
+### Performance
+
+* perf: repair release ([`890e714`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/890e7141cb19b7a5aaad5cbae3365d28d1845831))
+
+
+## v0.0.5 (2024-08-28)
+
+### Refactor
+
+* refactor: added lock to gitignore ([`92801fe`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/92801fefd6c6b52d74cc25d0e5a8b87bcd94ddcb))
+
+
+## v0.0.4 (2024-08-28)
+
+### Chore
+
+* chore: bumped version ([`c2059f7`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/c2059f71db864a5a0616a11157d059122a58c43e))
+
+* chore: updated version ([`ae98cc6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/ae98cc63bc16f732014aa7f8b25b1768e035fc33))
+
+### Ci
+
+* ci: updated project and actions configus ([`a7484b8`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/a7484b89c446a0c62aa0971af2192c902a676373))
+
+* ci: fixed trigger condition ([`0d7b498`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/0d7b498348586c64f4b109db745ffa7714e66bfc))
+
+### Feature
+
+* feat: added schema support for API collections conversion ([`eaf06d0`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/eaf06d0479302d25878d97148ed331a43dc7a8f9))
+
+* feat: rest api extractor ([`26d9f25`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/26d9f25b5522a1b299bba061023919c849ea3bac))
+
+* feat: version 0.2 ([`1181ca3`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/1181ca3212775d89ec0e1b17339c04d4db6813d5))
+
+* feat: version 0.1 ([`eec1e3f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/eec1e3fc8511d6916eeea27a83b3bf238546a0f8))
+
+* feat: added db credentials class to base ([`b04c301`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b04c30141741bf63e3f155e288251887159ee022))
+
+* feat: added credentials to TableContract for Oracle extractor ([`4fe5a8d`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/4fe5a8d2e67de95beb1f16a1cff7199fc7c5e8be))
+
+* feat: added semantic versining ([`499886f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/499886fc7cd32ff101ecd3aa402739957e82254b))
+
+* feat: added JDBC Extractor class ([`7fd609d`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/7fd609d8bd5a35ca64367dbac2ad206a168bf11e))
+
+* feat: added new github actions workflow ([`af863f1`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/af863f10b39e76ba4b07b6f3dd3742d449035d02))
+
+* feat: oracle jdbc extraction ([`a4b8392`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/a4b83924615b409ad0bf807db15491fd75f80b39))
+
+* feat: updated setup.py ([`6fc5396`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/6fc539686561f080697025140a82ad0550bea529))
+
+* feat: initial structure ([`c86c542`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/c86c542d75548518ed1624859db13266c66d6e5e))
+
+### Fix
+
+* fix: cleaned up change ([`318ad4b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/318ad4b3df3dc41bf56de2756b3eed18930e58be))
+
+* fix: cleaned up change ([`286ab84`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/286ab84029357d1afbc31741945938237ad94b49))
+
+* fix: cleaned up change ([`b997b9d`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b997b9d351ca9e88bc8fd5eb200595cc7b382ea1))
+
+* fix: cleaned up change ([`09ea622`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/09ea6222098152a0be83567e4536d2fa868c70c9))
+
+* fix: cleaned up change ([`139e048`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/139e0488cb902c03bde2b93139623c849956fe8f))
+
+* fix: renamed classes ([`b3df19c`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b3df19caaaf9fe4461c07c3ca032892af9d5804d))
+
+* fix: condition in write options ([`73360d4`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/73360d4931980009a7c09afbd107afb01dcc7160))
+
+* fix: condition in write options ([`bb90dd6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/bb90dd61cb7c681b09568268a5d3f1ba450a3a89))
+
+* fix: condition in write options ([`25ec420`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/25ec420e20157f468e69bcbd7dabe8a0f298bb64))
+
+* fix: changed method ([`987fb67`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/987fb67ac54bff8d46b44bc2e318c7483cee7b4e))
+
+* fix: write to unity as delta ([`ec72aa4`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/ec72aa45418ce7d9e961f706cb404a0a58a3e979))
+
+* fix: select query ([`cce0a87`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/cce0a8715eb9c3682ed615e603acdfa7c2331b46))
+
+* fix: fixed condition ([`599f0a6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/599f0a6bd8f84bb4b3a149dbae33f70b1d9854db))
+
+* fix: fixed oracle ([`771a743`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/771a743f5bdeeb8ccd54221126727de9527a0aee))
+
+* fix: added extract_data call
+feat: added unit tests ([`cae76c6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/cae76c6c30acc6957acc22095238da67863f436f))
+
+* fix: circular dependency import ([`4f39395`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/4f3939516fceb9f090930eb5bba96a557b893956))
+
+* fix: circular dependency import ([`b2c417a`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b2c417a6350b631d42cdf2c7519a259508727456))
+
+* fix: adjusted structure of TableContract ([`739fb6e`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/739fb6eac5be9bd9a77cdf39ac7117d99f895974))
+
+* fix: sem-ver ([`455754b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/455754b44eeecb8bb3122cf72fb2f6825987130b))
+
+* fix: sem-ver ([`a6b4705`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/a6b470508d6165f8383579b9580b05743823389c))
+
+* fix: sem-ver ([`1812db0`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/1812db0cd8319e149fdf9e990d65673f02edcac3))
+
+* fix: trying to enable sem-ver ([`e4630ad`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/e4630ad5e240e8e47a768671c1bd30480a8473e1))
+
+* fix: trying to enable sem-ver ([`d506dab`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/d506dabb5c9380bd72cdf9319a51c11518d12aa9))
+
+* fix: trying to enable sem-ver ([`df30087`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/df30087460b55c0b18dfced3a1384d8f4289f6ff))
+
+* fix: changed build command for ci ([`68ad78f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/68ad78f990181baf4c4754ee914e3f5b802fdbc1))
+
+* fix: fixed ci pipeline ([`b6eb796`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b6eb796c1608ae9fb4ee8555dfcae1ba441815bb))
+
+* fix: fixed ci pipeline ([`153c8a3`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/153c8a3b42f1147aaf5f8cc51582f7767ec57037))
+
+* fix: fixed ci pipeline ([`703da9f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/703da9f0cabc12df2a7e864c6986058044b260bf))
+
+* fix: test pipeline trigger ([`377e6f7`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/377e6f779871af4f6eb69822f7179b0fae38dfa1))
+
+* fix: TableContract compilation issues ([`9f32b45`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/9f32b454040a71f22bb3aecdf64662f02a80075c))
+
+* fix: decreased version due to compatibility issues with databricks runtime ([`0f40c40`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/0f40c40c4203afe445b9fc5c6ad08d6e4c0e8d67))
+
+### Refactor
+
+* refactor: removed requirements.txt ([`0149179`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/0149179cd93e4b676a30d3a342ec8bcf96f18e26))
+
+### Unknown
+
+* 0.1.0
+
+[***NO_CI***] Automatically generated by python-semantic-release ([`baf11ee`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/baf11eef2ee736fa8984715dd3067017f45f40a4))
+
+* Merge pull request #7 from ruslan-mendybayev-epam/dev
+
+feat: rest api extract ([`ff02a5c`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/ff02a5c61b928e4a051cb6b03cfaeafc4cd355bb))
+
+* 0.1.0-dev.19
+
+Automatically generated by python-semantic-release ([`1493bf0`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/1493bf0e8bd05dc7a6e0317218b3c02ffa0f8b85))
+
+* 0.1.0-dev.18
+
+Automatically generated by python-semantic-release ([`abd6d97`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/abd6d97f7089853ca5d87393c4c5a998e70ef27a))
+
+* 0.1.0-dev.17
+
+Automatically generated by python-semantic-release ([`6b5f354`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/6b5f35443c96394b4a1874a5b00519c43fc481f5))
+
+* Merge pull request #6 from ruslan-mendybayev-epam/feature/yaml-bundle
+
+Databricks Workflow generator ([`5f34b04`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/5f34b04a806cd919da3b4dd85e1c18dc877c2200))
+
+* 0.1.0-dev.16
+
+Automatically generated by python-semantic-release ([`8e87d28`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/8e87d283f886628ef3b745842a399a8078367954))
+
+* 0.1.0-dev.15
+
+Automatically generated by python-semantic-release ([`59bca2e`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/59bca2e5dbbfeba8a5314b330dc3104c96d847df))
+
+* 0.1.0-dev.14
+
+Automatically generated by python-semantic-release ([`0a5cf33`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/0a5cf3396d67a242472ef9c156077630bd4fc681))
+
+* 0.1.0-dev.13
+
+Automatically generated by python-semantic-release ([`465811a`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/465811adb3dad13c0b7eaceaccb9a3eca6133f71))
+
+* 0.1.0-dev.12
+
+Automatically generated by python-semantic-release ([`ac9344d`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/ac9344d2f4900ee28cf380919c25988a453daa1e))
+
+* 0.1.0-dev.11
+
+Automatically generated by python-semantic-release ([`465e2ff`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/465e2ffff90caba11e3c445f8b88352004fee920))
+
+* 0.1.0-dev.10
+
+Automatically generated by python-semantic-release ([`9364777`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/9364777f2d1100763a6ce10c768b29fa917032cd))
+
+* 0.1.0-dev.9
+
+Automatically generated by python-semantic-release ([`48fedac`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/48fedac50412d11b76dd037f5ab01f32fe968942))
+
+* fixed oracle ([`e7c4e15`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/e7c4e15fe6213461c19ecc1c2d20919215785b91))
+
+* 0.1.0-dev.8
+
+Automatically generated by python-semantic-release ([`ca0ea8f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/ca0ea8f6c47c06e3f415c512d402acdc6ada23c0))
+
+* 0.1.0-dev.7
+
+Automatically generated by python-semantic-release ([`2e3ad2b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/2e3ad2ba2455193fac89d3396d40fdbb4dd5e0ed))
+
+* 0.1.0-dev.6
+
+Automatically generated by python-semantic-release ([`2c84304`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/2c84304949cbdc2286bf852f2d34f422a0f466b5))
+
+* 0.1.0-dev.5
+
+Automatically generated by python-semantic-release ([`2d92b50`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/2d92b50a37175b69f105338a31a957216b428e91))
+
+* 0.1.0-dev.4
+
+Automatically generated by python-semantic-release ([`6139bee`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/6139bee6131eae2ff75180dec1b9cc013ab4fa62))
+
+* 0.1.0-dev.3
+
+Automatically generated by python-semantic-release ([`4c2efcc`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/4c2efcca888ef1fa3aa5326884cab29f3cc45109))
+
+* 0.1.0-dev.2
+
+Automatically generated by python-semantic-release ([`b4c3f45`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/b4c3f4582f4b697e99dbaf1b720a5a7d252c92cf))
+
+* 0.1.0-dev.1
+
+Automatically generated by python-semantic-release ([`53e62ef`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/53e62ef821506ea6542b64aa5845703a7eea2c2a))
+
+* “ ([`8985f1f`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/8985f1f40237092a8efbcdf5582c3b3b188c00ac))
+
+* 0.1.0-dev.2
+
+Automatically generated by python-semantic-release ([`9dad030`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/9dad030eda517684d536276b3d3ae2eaa1aec10e))
+
+* removed check for dev branch ([`8b00a14`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/8b00a1422452e6ccc24c53239d70c90fee2f6bef))
+
+* changed dependencies build ([`e6532f1`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/e6532f14002d7873e36b3012dec197405a9e7c6f))
+
+* 0.1.0-dev.1
+
+Automatically generated by python-semantic-release ([`897b8d3`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/897b8d315247469ba8275bc9a2c1ae08e0ff7bce))
+
+* Merge pull request #4 from ruslan-mendybayev-epam/1-add-jdbc-data-extraction
+
+feat: add jdbc data extraction ([`7024a3a`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/7024a3a8e676e59cb1001ca6b37a3b58ce03183b))
+
+* updated main.yml ([`852f930`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/852f93085dca7d0ae0948874c9a84c14ad416e03))
+
+* Update main.yml ([`2a99fd0`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/2a99fd0b991fdcdc47e839eb891a300b55c79a4c))
+
+* Update main.yml ([`94550e5`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/94550e57539082159e686630cb895e0f896ad8d9))
+
+* Create main.yml ([`26f3e7c`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/26f3e7ceea4b5d5533e0f4d4fcca47b6e03d0c4c))
+
+* wip: added partially restructured extraction for oracle. ([`c7f29b6`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/c7f29b6d40416c9cb3c96165c234d22959e6b0ba))
+
+* Initial commit ([`d72808b`](https://github.com/ruslan-mendybayev-epam/ingestion-lib/commit/d72808b213016ac48fc69251abb2dbddd7f3d32e))
