@@ -23,6 +23,8 @@ findspark = "^2.0.1"
 delta-spark = "^3.2.0"
 
 
+
+
 [tool.semantic_release]
 version_toml = ["pyproject.toml:tool.poetry.version"]
 

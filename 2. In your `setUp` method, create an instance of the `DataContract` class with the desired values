@@ -1,0 +1,8 @@
+class TestDeltaDataSink(unittest.TestCase):
+    def setUp(self):
+        # Create data contract
+        self.data_contract = DataContract(
+            batch_timestamp="2022-01-01",
+            target_schema="my_schema",
+            table_name="my_table"
+        )
