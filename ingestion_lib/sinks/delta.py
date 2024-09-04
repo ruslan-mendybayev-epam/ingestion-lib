@@ -16,7 +16,7 @@ class SnapshotUnity(DeltaDataSink):
         full_table_name = f"{contract.target_schema}.{contract.table_name}"
         (self.spark_dataframe.distinct().write.format("delta").mode("overwrite").options(**write_options).saveAsTable(
             full_table_name))
-        return get_row_count_written(self.spark_dataframe, table_name=contract.table_name)
+        return get_row_count_written(self.spark_dataframe, table_name=full_table_name)
 
 
 @dataclass
