@@ -80,3 +80,18 @@ class TestDeltaDataSink(TestCase):
         updated_table = self.spark.sql(f"select * from {self.table_full_name}")
         updated_table.show(truncate=False)
         self.assertEqual(11, updated_table.count())
+
+    def test_write_cdc_unity_delta_sink(self):
+        columns = ["SurrogateKey","DimId", "Col1", "Col2","Col3","Hash", "CurrentFlag","DeletedFlag" , "EffectiveFromDate" , "EffectiveToDate" ]
+        data_s = [("","1" ,"200" , "500" , "800" , "" , "Y","N" ,"2023-05-12","2999-12-31" )
+            , ("","6",  "300" , "900" , "250" , "" , "Y","N","2023-05-12","2999-12-31" )
+            ,("","13",  "100" , None , "700" , "" , "Y","N","2023-06-08","2999-12-31")
+            ,("","59",  "1500" , "2000" , "800" , "" , "Y","N","2023-06-08","2999-12-31")]
+
+        HashCols = ['Col1', 'Col2', 'Col3']
+        silver = self.spark_dataframe.withColumn("Hash", lit(sha2(concat_ws("~", *HashCols), 256)))
+        keys = ['DimId', 'Hash']
+
+        w = Window().orderBy(*keys)
+        silver = silver.withColumn("SurrogateKey", row_number().over(w))
+        silver = silver.withColumn("SurrogateKey",col("SurrogateKey").cast('long'))
