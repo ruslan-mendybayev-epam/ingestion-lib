@@ -1,18 +1,16 @@
+import json
 import logging
 import unittest
 from unittest.mock import MagicMock, patch
 
+from great_expectations.data_context import EphemeralDataContext
 from parameterized import parameterized
 from pyspark.sql import SparkSession
-from pyspark.sql.dataframe import DataFrame
 
-from ingestion_lib.utils.data_quality import DataQualityValidator, DEFAULT_INDEX_COLUMN
+from ingestion_lib.utils.data_quality import DataQualityValidator
 from ingestion_lib.utils.log_analytics import CustomLogger
-from great_expectations.data_context import EphemeralDataContext
-from great_expectations.exceptions import GreatExpectationsValidationError
-
 from test_contracts import CONTRACT_WITH_RULES_DIM_DATE_NO_INDEX_COL_QUARANTINE
-import json
+
 
 class TestDataQualityValidator(unittest.TestCase):
 
@@ -55,6 +53,38 @@ class TestDataQualityValidator(unittest.TestCase):
         context = validator._setup_data_context()
         self.assertIsNotNone(context)
 
+    def test_get_index_columns_no_rules(self):
+        validator = DataQualityValidator(
+            spark=self.spark,
+            df=self.df,
+            layer=self.layer,
+            table_name=self.table_name,
+            contract=json.dumps({}),  # No dq_rules
+            correlation_id=self.correlation_id,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError) as context:
+            validator._get_index_columns()
+        self.assertEqual(str(context.exception),
+                         "The 'dq_rules' attribute must in the contract to get or create index columns.")
+
+    def test_get_index_columns_from_contract(self):
+        contract = json.dumps({
+            "dq_rules": [{"expectation_type": "expect_column_values_to_not_be_null", "columns": ["id"]}],
+            "index_columns": ["__unique_id__"]
+        })
+        validator = DataQualityValidator(
+            spark=self.spark,
+            df=self.df,
+            layer=self.layer,
+            table_name=self.table_name,
+            contract=contract,
+            correlation_id=self.correlation_id,
+            logger=self.logger
+        )
+        index_columns = validator._get_index_columns()
+        self.assertEqual(index_columns, ["__unique_id__"])
+
     def test_add_expectations(self):
         validator = DataQualityValidator(
             spark=self.spark,
@@ -68,7 +98,7 @@ class TestDataQualityValidator(unittest.TestCase):
         expectations, index_columns = validator._add_expectations()
         self.assertEqual(len(expectations), 1)
         self.assertEqual(expectations[0].type, "expect_column_values_to_not_be_null")
-        self.assertEqual(index_columns, [DEFAULT_INDEX_COLUMN])
+        self.assertEqual(index_columns, ["id"])
 
     @patch.object(DataQualityValidator, '_create_checkpoint')
     @patch.object(DataQualityValidator, '_quarantine_unexpected_records')
@@ -88,19 +118,57 @@ class TestDataQualityValidator(unittest.TestCase):
         result_df = validator.run()
         self.assertEqual(result_df.collect(), self.df.collect())
 
-
-    def test_run_v1(self):
-
+    def test_create_index_columns_no_rules(self):
         validator = DataQualityValidator(
             spark=self.spark,
             df=self.df,
             layer=self.layer,
             table_name=self.table_name,
-            contract=self.contract,
+            contract=json.dumps({}),  # No dq_rules
+            correlation_id=self.correlation_id,
+            logger=self.logger
+        )
+        with self.assertRaises(ValueError) as context:
+            validator._create_index_columns(self.df, ["__unique_id__"])
+        self.assertEqual(str(context.exception),
+                         "The 'dq_rules' attribute must in the contract to get or create index columns.")
+
+    @parameterized.expand(
+        [
+            (CONTRACT_WITH_RULES_DIM_DATE_NO_INDEX_COL_QUARANTINE)
+        ]
+    )
+    def test_run_v1(self, contract):
+        validator = DataQualityValidator(
+            spark=self.spark,
+            df=self.df,
+            layer=self.layer,
+            table_name=self.table_name,
+            contract=contract,
             correlation_id=self.correlation_id,
             logger=self.logger
         )
         result_df = validator.run_v1()
+        self.assertEqual(result_df.collect(), self.df.collect())
+
+    @parameterized.expand(
+        [
+            (CONTRACT_WITH_RULES_DIM_DATE_NO_INDEX_COL_QUARANTINE)
+        ]
+    )
+    def test_negative_run_v1(self, contract):
+        self.df = self.spark.createDataFrame([(1, "a"), (2, "b"), (3, None)], ["id", "value"])
+        validator = DataQualityValidator(
+            spark=self.spark,
+            df=self.df,
+            layer=self.layer,
+            table_name=self.table_name,
+            contract=contract,
+            correlation_id=self.correlation_id,
+            logger=self.logger
+        )
+        result_df = validator.run_v1()
+        self.assertNotEqual(validator._unexpected_records_count, 0)
         self.assertEqual(result_df.collect(), self.df.collect())
 
     def test_create_index_columns(self):
@@ -116,4 +184,3 @@ class TestDataQualityValidator(unittest.TestCase):
         index_columns = ["__unique_id__"]
         df_with_index = validator._create_index_columns(self.df, index_columns)
         self.assertIn("__unique_id__", df_with_index.columns)
-

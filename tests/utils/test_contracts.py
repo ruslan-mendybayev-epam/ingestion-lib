@@ -6,11 +6,14 @@ CONTRACT_WITH_RULES_DIM_DATE_NO_INDEX_COL_QUARANTINE = """
             "dq_rules": [
                 {
                     "expectation_type": "expect_column_values_to_not_be_null",
-                    "columns": [
+                    "index_columns": [
                         "id"
                     ],
+                    "columns": [
+                        "value"
+                    ],
                     "meta": {
-                        "strategy": "warning"
+                        "strategy": "quarantine"
                     }
                 }
             ],

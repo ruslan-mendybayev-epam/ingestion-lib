@@ -2,10 +2,13 @@ import json
 import os
 import signal
 import traceback
-from enum import Enum
-from typing import Optional, Tuple
 
-import great_expectations
+from pyspark.sql.types import StringType
+from slugify import slugify
+from enum import Enum
+from typing import Optional, Tuple, List
+
+import great_expectations as gx
 from great_expectations import ValidationDefinition, ExpectationSuite
 from great_expectations.checkpoint import Checkpoint
 from great_expectations.checkpoint.checkpoint import CheckpointResult
@@ -16,7 +19,7 @@ from great_expectations.datasource.fluent.spark_datasource import DataFrameAsset
 from great_expectations.exceptions import GreatExpectationsValidationError
 from great_expectations.expectations.expectation_configuration import ExpectationConfiguration
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import monotonically_increasing_id
+from pyspark.sql.functions import monotonically_increasing_id, lit
 
 from ingestion_lib.utils.log_analytics import CustomLogger
 
@@ -101,7 +104,7 @@ class DataQualityValidator:
             # Initialize Great Expectations DataContext as EphemeralDataContext to avoid concurrency issues with file-based context.
             # If you need to replicate the concurrency issue, run `pytest -n 3 tests/test_dq_checks.py`
             project_config = DataContextConfig(store_backend_defaults=InMemoryStoreBackendDefaults())
-            context = great_expectations.get_context(project_config=project_config)
+            context = gx.get_context(project_config=project_config)
 
             # Configuring Data Doc sites makes no sense for EphemeralDataContext as the execution results are not stored
             # between the runs.
@@ -151,7 +154,7 @@ class DataQualityValidator:
                         "result_format": result_format,
                         "exclude_unexpected_values": False,
                         "unexpected_index_column_names": index_columns,
-                        "return_unexpected_index_query": True,
+                        "include_unexpected_rows": True,
                     }
                     expectation_config = ExpectationConfiguration(
                         type=rule["expectation_type"],
@@ -184,12 +187,61 @@ class DataQualityValidator:
     def _quarantine_unexpected_records(
             self, df: DataFrame, index_columns: list[str], checkpoint_result: CheckpointResult, mount_point: str
     ) -> DataFrame:
-        """
-        Step 5: Quarantine unexpected records
-        Quarantine unexpected records based on the validation results.
-        This involves identifying unexpected records and saving them to a quarantine table.
-        """
-        pass
+
+        run_name = checkpoint_result.run_id.run_name
+        unexpected_index_df = df.select(index_columns).limit(0)
+        all_unexpected_records: List[DataFrame] = []
+
+        quarantine_table_name = self._get_quarantine_table_name(run_name=run_name)
+        for _, validation_result in checkpoint_result.run_results.items():
+            expectation_results = validation_result.get("results")
+            for expectation_result in expectation_results:
+                if (
+                        not expectation_result.success
+                        and "raised_exception" in expectation_result.exception_info
+                        and expectation_result.exception_info["raised_exception"]
+                ):
+                    self._log_gx_exception(exception, expectation_result)
+
+                expectation_config = expectation_result.get("expectation_config", {})
+                rule_type = expectation_config.get("type", {})
+                rule_kwargs = expectation_config.get("kwargs", {})
+                rule_strategy = expectation_config.get("meta", {}).get("strategy", "undefined")
+
+                unexpected_count = expectation_result.get("result", {}).get("unexpected_count", 0)
+                if unexpected_count:
+                    self._unexpected_records_count += unexpected_count
+                if "unexpected_index_list" in expectation_result["result"]:
+                    unexpected_list = list(expectation_result["result"]["unexpected_index_list"])
+
+                    if unexpected_list:
+                        self.logger.debug(
+                            f"Unexpected index list for rule {rule_type} with args \n{rule_kwargs} \n\n{unexpected_list}")
+                        unexpected_index_df = self.spark.createDataFrame(unexpected_list, unexpected_index_df.schema)
+                        unxepected_df: DataFrame = (
+                            df.join(unexpected_index_df, on=index_columns, how="inner")
+                            .withColumn("__rule_type", lit(rule_type).cast(StringType()))
+                            .withColumn("__rule_kwargs", lit(str(rule_kwargs)).cast(StringType()))
+                            .withColumn("__rule_strategy", lit(str(rule_strategy)).cast(StringType()))
+                            .withColumn("__correlation_id", lit(self.correlation_id).cast(StringType()))
+                        )
+                        all_unexpected_records.append(self._handle_void_dtypes(unxepected_df))
+        if all_unexpected_records:
+            self._quarantine_table_name = self._save_unexpected_rows(run_name,
+                                                                     all_unexpected_records)
+            df = self._apply_strategy(
+                df=df,
+                index_columns=index_columns,
+                all_unexpected_records=all_unexpected_records,
+                expectation_config=expectation_config,
+                fully_qualified_table_name=self._quarantine_table_name,
+            )
+            self.logger.debug(
+                f"Unexpected records saved to {self._quarantine_table_name} at {self._quarantine_table_location}.")
+        else:
+            self._quarantine_table_name = None
+            self._quarantine_table_location = None
+        return df
 
     def _handle_exception(self, e):
         if hasattr(e, "message"):
@@ -197,7 +249,8 @@ class DataQualityValidator:
         else:
             msg = str(e)
         stack_trace = traceback.format_exc()
-        self.logger.log_error(f"Exception in data quality checker: {msg}", operation={"message": msg, "stack_trace": stack_trace})
+        self.logger.log_error(f"Exception in data quality checker: {msg}",
+                              operation={"message": msg, "stack_trace": stack_trace})
 
     def run(self, mount_point: str = "/mnt") -> DataFrame:
         if not self.context:
@@ -247,12 +300,14 @@ class DataQualityValidator:
         checkpoint = self.context.checkpoints.add(Checkpoint(
             name="my_checkpoint",
             validation_definitions=[validation_definition],
-            result_format={"result_format": "COMPLETE"},
+            result_format={"result_format": "COMPLETE", "include_unexpected_rows": True,
+                           "unexpected_index_column_names": index_columns},
 
         ))
 
         batch_parameters = {"dataframe": self.df}
-        checkpoint_result = checkpoint.run(batch_parameters=batch_parameters)
+        runid = gx.RunIdentifier(run_name=f"DQ_run_{self.table_name}")
+        checkpoint_result = checkpoint.run(batch_parameters=batch_parameters, run_id=runid)
         self.logger.debug(
             f"==========================\nGreat Expectations checkpoint run results: \n{checkpoint_result}\n=========================="
         )
@@ -263,10 +318,15 @@ class DataQualityValidator:
         return filtered_df
 
     def _get_index_columns(self) -> list[str]:
-        """
-        Helper method to get index columns from the contract.
-        """
-        pass
+        if not self.dataset_rules:
+            raise ValueError("The 'dq_rules' attribute must in the contract to get or create index columns.")
+
+        index_columns = self.contract.get("index_columns")
+        if not index_columns:
+            index_columns = next(
+                (rule.get("index_columns") for rule in self.dataset_rules if rule.get("index_columns")), None)
+        self.logger.debug(f"Index columns: {index_columns}")
+        return index_columns
 
     def _get_suite_name(self) -> str:
         """
@@ -283,4 +343,59 @@ class DataQualityValidator:
         for column in index_columns:
             df = df.withColumn(column, monotonically_increasing_id())
 
+        return df
+
+    def _get_quarantine_table_name(self, run_name):
+        # date_time_layer_database_table
+        quarantine_table_name = slugify(run_name, separator="_")
+        return quarantine_table_name
+
+    def _handle_void_dtypes(self, df: DataFrame) -> DataFrame:
+        for column_name, column_type in df.dtypes:
+            # If the column type is 'void', cast it to 'string'
+            if column_type == "void":
+                df = df.withColumn(column_name, col(column_name).cast("string"))
+        return df
+
+    def _save_unexpected_rows(self, run_name: str, all_unexpected_records: List[DataFrame]) -> str:
+        schema_name = f"{self.layer}_quarantine"
+        self.spark.sql(f"CREATE SCHEMA IF NOT EXISTS {schema_name}")
+
+        quarantine_table_name = self._get_quarantine_table_name(run_name)
+        fully_qualified_table_name = f"{schema_name}.{quarantine_table_name}"
+
+        for unexpected_df in all_unexpected_records:
+            self.logger.debug(f"Saving unexpected records to {fully_qualified_table_name}")
+            self.spark.sql(f"CREATE TABLE IF NOT EXISTS {fully_qualified_table_name} USING DELTA")
+            unexpected_df.write.format("delta").mode("append").option("mergeSchema", "true").option("overwriteSchema", "true").saveAsTable(name=fully_qualified_table_name)
+        return fully_qualified_table_name
+
+    def _apply_strategy(
+            self,
+            df: DataFrame,
+            index_columns,
+            all_unexpected_records: List[DataFrame],
+            expectation_config,
+            fully_qualified_table_name: str,
+    ) -> DataFrame:
+        for unexpected_df in all_unexpected_records:
+            if "__rule_strategy" not in unexpected_df.columns:
+                continue
+
+            count = unexpected_df.count()
+            if count > 0:
+                strategy = unexpected_df.first()["__rule_strategy"]
+                if strategy in [Strategy.QUARANTINE, Strategy.WARNING]:
+                    self.logger.log_success(count, expectation_config, strategy)
+
+                match Strategy(strategy):
+                    case Strategy.QUARANTINE:
+                        df = df.join(unexpected_df, on=index_columns, how="leftanti")
+                    case Strategy.ERROR:
+                        message = (
+                            f"Expectation with strategy '{strategy}' found {count} "
+                            f"unexpected records and sent them to quarantine table '{fully_qualified_table_name}'."
+                        )
+                        self.logger.log_error(message, expectation_config, strategy)
+                        raise DQValidationError(message)
         return df
