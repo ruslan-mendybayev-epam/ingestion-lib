@@ -72,7 +72,7 @@ class TestDataQualityValidator(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             validator._get_index_columns()
         self.assertEqual(str(context.exception),
-                         "The 'dq_rules' attribute must in the contract to get or create index columns.")
+                         "The 'dq_rules' attribute must be in the contract to get or create index columns.")
 
     def test_get_index_columns_from_contract(self):
         contract = json.dumps({
@@ -137,7 +137,7 @@ class TestDataQualityValidator(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             validator._create_index_columns(self.df, ["__unique_id__"])
         self.assertEqual(str(context.exception),
-                         "The 'dq_rules' attribute must in the contract to get or create index columns.")
+                         "The 'dq_rules' attribute must be in the contract to get or create index columns.")
 
     @parameterized.expand(
         [
@@ -154,7 +154,7 @@ class TestDataQualityValidator(unittest.TestCase):
             correlation_id=self.correlation_id,
             logger=self.logger
         )
-        result_df = validator.run_v1()
+        result_df = validator.run()
         self.assertEqual(result_df.collect(), self.df.collect())
 
     @parameterized.expand(
@@ -173,7 +173,7 @@ class TestDataQualityValidator(unittest.TestCase):
             correlation_id=self.correlation_id,
             logger=self.logger
         )
-        result_df = validator.run_v1()
+        result_df = validator.run()
         self.assertNotEqual(validator._unexpected_records_count, 0)
         self.assertEqual(result_df.collect(), self.df.collect())
 
