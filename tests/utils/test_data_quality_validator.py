@@ -3,19 +3,25 @@ import logging
 import unittest
 from unittest.mock import MagicMock, patch
 
+import pytest
 from great_expectations.data_context import EphemeralDataContext
 from parameterized import parameterized
 from pyspark.sql import SparkSession
 
 from ingestion_lib.utils.data_quality import DataQualityValidator
 from ingestion_lib.utils.log_analytics import CustomLogger
-from test_contracts import CONTRACT_WITH_RULES_DIM_DATE_NO_INDEX_COL_QUARANTINE
+from tests.utils.test_contracts import CONTRACT_WITH_RULES_DIM_DATE_NO_INDEX_COL_QUARANTINE
 
 
 class TestDataQualityValidator(unittest.TestCase):
 
+    @pytest.fixture(autouse=True)
+    def prepare_spark_session(self, spark_session: SparkSession):
+        self.spark = spark_session
+        import pyspark
+        print("PySpark version:", pyspark.__version__)
+
     def setUp(self):
-        self.spark = SparkSession.builder.master("local").appName("unittest").getOrCreate()
         self.df = self.spark.createDataFrame([(1, "a"), (2, "b")], ["id", "value"])
         self.layer = "test_layer"
         self.table_name = "test_table"
@@ -157,10 +163,10 @@ class TestDataQualityValidator(unittest.TestCase):
         ]
     )
     def test_negative_run_v1(self, contract):
-        self.df = self.spark.createDataFrame([(1, "a"), (2, "b"), (3, None)], ["id", "value"])
+        df_with_null = self.spark.createDataFrame([(1, "a"), (2, "b"), (3, None)], ["id", "value"])
         validator = DataQualityValidator(
             spark=self.spark,
-            df=self.df,
+            df=df_with_null,
             layer=self.layer,
             table_name=self.table_name,
             contract=contract,

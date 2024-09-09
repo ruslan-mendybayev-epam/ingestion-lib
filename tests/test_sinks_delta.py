@@ -3,8 +3,8 @@ import pytest
 from unittest import TestCase
 
 from delta import DeltaTable
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import to_date, lit, col
+from pyspark.sql import SparkSession, Window
+from pyspark.sql.functions import to_date, lit, col, sha2, concat_ws, row_number
 from pyspark.sql.types import StructType, StructField, DateType, IntegerType, StringType
 
 from ingestion_lib.sinks.delta import SnapshotUnity

@@ -19,7 +19,7 @@ from great_expectations.datasource.fluent.spark_datasource import DataFrameAsset
 from great_expectations.exceptions import GreatExpectationsValidationError
 from great_expectations.expectations.expectation_configuration import ExpectationConfiguration
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import monotonically_increasing_id, lit
+from pyspark.sql.functions import monotonically_increasing_id, lit, col
 
 from ingestion_lib.utils.log_analytics import CustomLogger
 
